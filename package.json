@@ -8,6 +8,5 @@
     "frontend"
   ],
   "scripts": {
-    "build": "cd frontend && npm install && npm run build"
-  }
+    "build": "cd frontend && npm install && npm run build && cd .. && cp -r frontend/build build"  }
 }
