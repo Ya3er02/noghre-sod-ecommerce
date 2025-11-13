@@ -15,5 +15,6 @@ export default defineConfig({
   mode: "development",
   build: {
     minify: false,
+        outDir: 'build',
   }
 })
