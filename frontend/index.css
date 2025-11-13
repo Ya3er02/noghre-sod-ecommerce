@@ -1,185 +1,321 @@
 @import "tailwindcss";
-
 @import "tw-animate-css";
 
-/* فونت فارسی زیبا */
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap');
+/* فونت فارسی حرفه‌ای - Estedad بهتر از Vazirmatn برای لوکس */
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/estedad-font@v5.0.0/dist/Estedad-FD-WOL.css');
 
 @custom-variant dark (&:is(.dark *));
 
 @utility container {
   margin-inline: auto;
   padding-inline: 1rem;
+  max-width: 1400px; /* محدود کردن عرض برای زیبایی */
   
   @media (width >= theme(--breakpoint-sm)) {
     padding-inline: 2rem;
   }
+  
+  @media (width >= theme(--breakpoint-lg)) {
+    padding-inline: 4rem;
+  }
 }
 
 :root {
-  /* تم لوکس نقره‌ای و طلایی */
-  --radius: 0.75rem;
+  /* تم لوکس مشابه Tiffany & Cartier - سفید و تمیز */
+  --radius: 0.125rem; /* گوشه‌های تیز‌تر برای ظاهر مدرن */
   
-  /* رنگ‌های لوکس */
-  --background: 240 10% 3.9%; /* تیره‌تر برای کنتراست بیشتر */
-  --foreground: 0 0% 98%;
+  /* پالت رنگی لوکس - سفید غالب */
+  --background: 0 0% 100%; /* سفید خالص */
+  --foreground: 0 0% 10%; /* مشکی برای متن */
   
-  --card: 240 10% 8%;
-  --card-foreground: 0 0% 98%;
+  --card: 0 0% 100%; /* کارت‌ها سفید */
+  --card-foreground: 0 0% 10%;
   
-  --popover: 240 10% 8%;
-  --popover-foreground: 0 0% 98%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 10%;
   
-  /* رنگ اصلی: نقره‌ای طلایی */
-  --primary: 45 100% 65%; /* طلایی درخشان */
-  --primary-foreground: 240 10% 10%;
+  /* طلایی ملایم برای accent - نه چشمک‌زن */
+  --primary: 43 74% 49%; /* طلایی شامپاینی */
+  --primary-foreground: 0 0% 100%;
   
-  --secondary: 0 0% 75%; /* نقره‌ای روشن */
-  --secondary-foreground: 0 0% 9%;
+  --secondary: 0 0% 96%; /* خاکستری روشن */
+  --secondary-foreground: 0 0% 10%;
   
-  --muted: 240 4% 16%;
-  --muted-foreground: 0 0% 63.9%;
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 40%;
   
-  --accent: 45 93% 60%; /* طلایی تیره‌تر */
-  --accent-foreground: 0 0% 9%;
+  --accent: 43 74% 49%;
+  --accent-foreground: 0 0% 10%;
   
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
+  --destructive: 0 70% 50%;
+  --destructive-foreground: 0 0% 100%;
   
-  --border: 45 50% 30%;
-  --input: 240 3.7% 20%;
-  --ring: 45 100% 65%;
-  
-  /* گرادیانت‌های لوکس */
-  --gradient-silver: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-gold: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-luxury: linear-gradient(135deg, #FFD700 0%, #C0C0C0 50%, #FFD700 100%);
+  --border: 0 0% 90%; /* بوردر ملایم */
+  --input: 0 0% 90%;
+  --ring: 43 74% 49%;
 }
 
 * {
-  font-family: 'Vazirmatn', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Estedad FD', 'Estedad', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-feature-settings: "ss02" on, "ss01" on; /* فیچرهای تایپوگرافی فارسی */
 }
 
 body {
-  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-  background-attachment: fixed;
+  background: #FFFFFF; /* سفید خالص - نه گرادیانت */
   color: oklch(var(--foreground));
-  font-feature-settings: "rlig" 1, "calt" 1;
-  min-height: 100vh;
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* افکت‌های لوکس برای کارت‌ها */
+/* تایپوگرافی لوکس - خوانا و الگانت */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 300; /* نازک‌تر برای احساس لوکس */
+  letter-spacing: 0.03em;
+  color: #1a1a1a;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 200; /* خیلی نازک */
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 300;
+  margin-bottom: 1.25rem;
+}
+
+h3 {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 400;
+  margin-bottom: 1rem;
+}
+
+p {
+  color: #4a4a4a;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+/* کارت‌های لوکس - مینیمال با سایه ملایم */
 .card {
-  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,215,0,0.2);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #FFFFFF;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px; /* گوشه تیز */
 }
 
 .card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(255,215,0,0.3), 0 0 20px rgba(192,192,192,0.2);
-  border-color: rgba(255,215,0,0.5);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08); /* سایه ملایم‌تر */
+  transform: translateY(-2px); /* حرکت کمتر */
+  border-color: rgba(0,0,0,0.12);
 }
 
-/* دکمه‌های لوکس */
+/* دکمه‌های لوکس - ساده و الگانت */
 button, .button {
-  position: relative;
-  overflow: hidden;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  padding: 0.875rem 2rem;
+  border-radius: 2px;
   transition: all 0.3s ease;
+  border: 1px solid;
 }
 
-button:hover, .button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(255,215,0,0.4);
+/* دکمه اصلی - مشکی */
+button:not(.button-outline), .button-primary {
+  background: #000000;
+  color: #FFFFFF;
+  border-color: #000000;
 }
 
-button::before, .button::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+button:not(.button-outline):hover {
+  background: #333333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-button:hover::before, .button:hover::before {
-  width: 300px;
-  height: 300px;
+/* دکمه Outline */
+.button-outline, button.outline {
+  background: transparent;
+  color: #000000;
+  border-color: #000000;
 }
 
-/* انیمیشن درخشش طلایی */
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
+.button-outline:hover {
+  background: #000000;
+  color: #FFFFFF;
 }
 
-.shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255,215,0,0.3), transparent);
-  background-size: 1000px 100%;
-  animation: shimmer 3s infinite;
+/* حذف انیمیشن‌های چشمک‌زن */
+/* هیچ shimmer، shine یا glow نداریم - فقط transition‌های ملایم */
+
+/* هدر و فوتر ساده */
+header {
+  background: #FFFFFF;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  padding: 1.5rem 0;
 }
 
-/* افکت بدرخشان برای عنوان‌ها */
-h1, h2, h3 {
-  background: linear-gradient(135deg, #FFD700 0%, #FFF 50%, #FFD700 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shine 3s linear infinite;
-  font-weight: 800;
+footer {
+  background: #F8F8F8;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  padding: 3rem 0;
+  margin-top: 6rem;
 }
 
-@keyframes shine {
-  to {
-    background-position: 200% center;
-  }
+/* سکشن Hero - تمیز با فضای زیاد */
+.hero {
+  padding: 6rem 0 8rem;
+  text-align: center;
+  background: #FAFAFA; /* خاکستری خیلی روشن */
 }
 
-/* اسکرول بار لوکس */
+/* Grid محصولات */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 4rem 0;
+}
+
+/* عکس محصولات */
+.product-image {
+  aspect-ratio: 1;
+  object-fit: cover;
+  width: 100%;
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.03); /* زوم خیلی ملایم */
+}
+
+/* Spacing لوکس - فضای زیاد */
+section {
+  padding: 5rem 0;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+/* اسکرول بار مینیمال */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0,0,0,0.3);
+  background: #F8F8F8;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #FFD700, #C0C0C0);
-  border-radius: 6px;
+  background: #CCCCCC;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #FFA500, #D3D3D3);
+  background: #999999;
 }
 
-/* افکت نور برای hover */
-.glow-on-hover {
-  position: relative;
+/* Link styles */
+a {
+  color: #000000;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  border-bottom: 1px solid transparent;
 }
 
-.glow-on-hover::after {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  background: linear-gradient(45deg, #FFD700, #C0C0C0, #FFD700);
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.3s;
-  z-index: -1;
-  filter: blur(10px);
+a:hover {
+  color: #C9A961; /* طلایی ملایم */
+  border-bottom-color: #C9A961;
 }
 
-.glow-on-hover:hover::after {
-  opacity: 1;
+/* فرم‌ها */
+input, textarea, select {
+  border: 1px solid rgba(0,0,0,0.15);
+  padding: 0.875rem 1rem;
+  border-radius: 2px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  background: #FFFFFF;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #C9A961;
+  box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.1);
+}
+
+/* Badges & Tags */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: #F8F8F8;
+  color: #4a4a4a;
+  border-radius: 2px;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: rgba(0,0,0,0.08);
+  margin: 3rem 0;
+}
+
+/* Feature boxes */
+.feature-box {
+  text-align: center;
+  padding: 2rem;
+}
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 1.5rem;
+  color: #C9A961;
+}
+
+/* انیمیشن ملایم ورود */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    padding: 4rem 0;
+  }
+  
+  section {
+    padding: 3rem 0;
+  }
+  
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
 }
