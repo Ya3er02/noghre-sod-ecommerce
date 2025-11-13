@@ -3,6 +3,7 @@ import backend from "~backend/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import ProductCarousel from '@/components/ProductCarousel';
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Shield, TrendingUp, QrCode } from "lucide-react";
@@ -81,6 +82,20 @@ export default function HomePage() {
           </div>
         </section>
 
+
+              {/* Featured Products Carousel */}
+      {featuredProducts && featuredProducts.length > 0 && (
+        <section className="bg-white py-16">
+          <div className="container mx-auto px-4">
+            <h2 className="mb-8 text-center text-4xl font-bold text-foreground">محصولات ویژه</h2>
+            <ProductCarousel 
+              products={featuredProducts.slice(0, 5)} 
+              autoplay={true} 
+              autoplayDelay={6000}
+            />
+          </div>
+        </section>
+      )}
         {featuredProducts && featuredProducts.length > 0 && (
           <section className="bg-muted/50 py-16">
             <div className="container mx-auto px-4">
