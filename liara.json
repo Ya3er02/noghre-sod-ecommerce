@@ -1,9 +1,5 @@
 {
-  "platform": "static",
+  "platform": "react",
   "app": "noghresood",
-  "port": 3000,
-  "build": {
-    "location": "frontend/dist",
-        "location": "iran"
-  }
+  "port": 3000
 }
