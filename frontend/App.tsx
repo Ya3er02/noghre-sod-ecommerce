@@ -9,7 +9,7 @@ import ValuePage from "./pages/ValuePage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import FAQPage from "./pages/FAQPage";
-import ThreadsBackground from '@/components/ThreadsBackground';
+import LiquidChrome from '@/components/LiquidChrome';
 
 const queryClient = new QueryClient();
 const PUBLISHABLE_KEY = "pk_test_Z2l2aW5nLWN1Yi00NC5jbGVyay5hY2NvdW50cy5kZXYk";
@@ -17,7 +17,7 @@ const PUBLISHABLE_KEY = "pk_test_Z2l2aW5nLWN1Yi00NC5jbGVyay5hY2NvdW50cy5kZXYk";
 export default function App() {
   return (
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-            <ThreadsBackground />
+                      <LiquidChrome baseColor={[0.76, 0.66, 0.38]} speed={0.3} amplitude={0.4} />
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <div className="min-h-screen bg-background" dir="rtl">
