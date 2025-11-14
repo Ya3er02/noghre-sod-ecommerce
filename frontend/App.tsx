@@ -20,7 +20,7 @@ export default function App() {
                       <LiquidChrome baseColor={[0.75, 0.75, 0.75]} speed={0.3} amplitude={0.4} />
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <div className="min-h-screen bg-background" dir="rtl">
+          <div className="min-h-screen bg-black text-white" dir="rtl">
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/products" element={<ProductsPage />} />
