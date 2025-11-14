@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import backend from "~backend/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import LiquidBackground from "@/components/LiquidBackground";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,14 +43,17 @@ export default function ValuePage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
+            <LiquidBackground>
       
       <main className="flex-1">
         <div className="border-b bg-gradient-to-br from-slate-50 to-slate-100 py-12 dark:from-slate-950 dark:to-slate-900">
           <div className="container mx-auto px-4">
+                      <div className="content-card content-card-elevated">
             <h1 className="mb-4 text-center text-3xl font-bold text-foreground">ارزش‌یابی محصول</h1>
             <p className="mb-8 text-center text-muted-foreground">
               شماره سریال محصول خود را وارد کنید تا ارزش فعلی آن را مشاهده کنید
             </p>
+                                  </div>
 
             <form onSubmit={handleSubmit} className="mx-auto max-w-md">
               <div className="flex gap-2">
@@ -76,6 +80,7 @@ export default function ValuePage() {
 
         {product && calc && (
           <div className="container mx-auto px-4 py-12">
+                      <div className="content-card content-card-elevated">
             <div className="mb-8 rounded-lg border bg-card p-6">
               <h2 className="mb-4 text-xl font-bold text-foreground">اطلاعات محصول</h2>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -107,6 +112,7 @@ export default function ValuePage() {
                 </div>
               </div>
             </div>
+                                  </div>
 
             <div className="grid gap-6 md:grid-cols-3">
               <Card>
@@ -167,6 +173,7 @@ export default function ValuePage() {
           </div>
         )}
       </main>
+                    </LiquidBackground>
 
       <Footer />
     </div>
