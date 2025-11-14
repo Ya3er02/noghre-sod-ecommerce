@@ -47,8 +47,8 @@ export const LiquidBackground: React.FC<LiquidBackgroundProps> = ({ children }) 
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5)0.15,
-        vy: (Math.random() - 0.5)0.15,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
         radius: Math.random() * 3 + 2,
         alpha: Math.random() * 0.5 + 0.2
       });
