@@ -1,5 +1,6 @@
 {
-  "name": "frontend",
+  "name": "noghre-sood-frontend",
+  "description": "فروشگاه آنلاین نقره سود - Noghre Sood Silver E-commerce Platform",
   "version": "1.0.0",
   "type": "module",
   "packageManager": "bun",
@@ -20,7 +21,7 @@
     "clsx": "^2.1.1",
     "encore.dev": "^1.51.6",
     "lucide-react": "^0.484.0",
-        "ogl": "^1.0.6",
+    "ogl": "^1.0.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.3",
