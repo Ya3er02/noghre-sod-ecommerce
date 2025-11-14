@@ -1,16 +1,20 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import LiquidBackground from '@/components/LiquidBackground';
 
 export default function AboutPage() {
   return (
     <div className="flex min-h-screen flex-col">
+            <LiquidBackground>
       <Header />
       
       <main className="flex-1">
-        <div className="border-b bg-muted/50 py-12">
+                <div className="content-card content-card-elevated">
+  <div className="border-b bg-muted/50 py-12">
           <div className="container mx-auto px-4">
             <h1 className="text-center text-3xl font-bold text-foreground">درباره نقره سُد</h1>
           </div>
+            </div>
         </div>
 
         <div className="container mx-auto px-4 py-12">
@@ -41,7 +45,8 @@ export default function AboutPage() {
         </div>
       </main>
 
-      <Footer />
+            </LiquidBackground>
+<Footer />
     </div>
   );
 }
