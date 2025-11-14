@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid gap-8 md:grid-cols-3">
           <div>
-            <h3 className="mb-4 text-lg font-bold text-foreground">نقره سُد</h3>
+            <h3 className="mb-4 text-lg font-bold text-foreground">نقره سود</h3>
             <p className="text-sm text-muted-foreground">
               پیشرو در سرمایه‌گذاری نقره با تضمین بازخرید و شماره سریال یکتا
             </p>
@@ -16,16 +16,16 @@ export default function Footer() {
           <div>
             <h3 className="mb-4 text-lg font-bold text-foreground">دسترسی سریع</h3>
             <div className="flex flex-col gap-2">
-              <Link to="/products" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link to="/products" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 محصولات
               </Link>
-              <Link to="/value" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link to="/value" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 ارزش‌یابی
               </Link>
-              <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 درباره ما
               </Link>
-              <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground">
+              <Link to="/faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 سوالات متداول
               </Link>
             </div>
@@ -40,7 +40,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <span>info@noghresod.ir</span>
+                <span>info@noghresood.com</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4" />
@@ -51,7 +51,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} نقره سُد. تمامی حقوق محفوظ است.
+          © {new Date().getFullYear()} نقره سود. تمامی حقوق محفوظ است.
         </div>
       </div>
     </footer>
