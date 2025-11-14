@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import LiquidBackground from "@/components/LiquidBackground";
 import {
   Accordion,
   AccordionContent,
@@ -38,14 +39,17 @@ export default function FAQPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
+            <LiquidBackground>
       
       <main className="flex-1">
         <div className="border-b bg-muted/50 py-12">
           <div className="container mx-auto px-4">
+                      <div className="content-card content-card-elevated">
             <h1 className="text-center text-3xl font-bold text-foreground">سوالات متداول</h1>
             <p className="mt-2 text-center text-muted-foreground">
               پاسخ سوالات رایج در مورد نقره سُد
             </p>
+                                  </div>
           </div>
         </div>
 
@@ -66,6 +70,7 @@ export default function FAQPage() {
           </div>
         </div>
       </main>
+                    </LiquidBackground>
 
       <Footer />
     </div>
