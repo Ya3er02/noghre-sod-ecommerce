@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import ProductCarousel from '@/components/ProductCarousel';
+import LiquidChrome from '@/components/LiquidChrome';
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Shield, TrendingUp, QrCode } from "lucide-react";
@@ -19,11 +20,21 @@ export default function HomePage() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      {/* Liquid Chrome Background Effect */}
+      <LiquidChrome 
+        baseColor={[0.75, 0.75, 0.75]} 
+        speed={0.15}
+        amplitude={0.25}
+        frequencyX={2.5}
+        frequencyY={2.5}
+        interactive={true}
+      />
+      
       <Header />
       
       <main className="flex-1">
-        <section className="bg-gradient-to-br from-slate-50 to-slate-100 py-20 dark:from-slate-950 dark:to-slate-900">
-          <div className="container mx-auto px-4">
+        <section className="relative py-20">
+          <div className="container mx-auto px-4 relative z-10">
             <div className="mx-auto max-w-3xl text-center animate-fade-in-up">
               <h1 className="mb-6 text-4xl font-bold text-foreground md:text-6xl">
                 سرمایه‌گذاری امن در نقره
@@ -46,10 +57,10 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="py-16">
+        <section className="py-16 bg-white/80 backdrop-blur-sm relative z-10">
           <div className="container mx-auto px-4">
             <div className="grid gap-8 md:grid-cols-3 stagger-container">
-              <div className="flex flex-col items-center text-center card-lift">
+              <div className="flex flex-col items-center text-center card-lift bg-white/90 p-8 rounded-2xl shadow-lg">
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 icon-bounce">
                   <Shield className="h-8 w-8 text-primary" />
                 </div>
@@ -59,7 +70,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="flex flex-col items-center text-center card-lift">
+              <div className="flex flex-col items-center text-center card-lift bg-white/90 p-8 rounded-2xl shadow-lg">
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 icon-bounce">
                   <QrCode className="h-8 w-8 text-primary" />
                 </div>
@@ -69,7 +80,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="flex flex-col items-center text-center card-lift">
+              <div className="flex flex-col items-center text-center card-lift bg-white/90 p-8 rounded-2xl shadow-lg">
                 <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 icon-bounce">
                   <TrendingUp className="h-8 w-8 text-primary" />
                 </div>
