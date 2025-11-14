@@ -4,8 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import ProductCarousel from '@/components/ProductCarousel';
-import LiquidChrome from '@/components/LiquidChrome';
-import { Button } from "@/components/ui/button";
+import LiquidBackground from '@/components/LiquidBackground';import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Shield, TrendingUp, QrCode } from "lucide-react";
 
@@ -20,15 +19,8 @@ export default function HomePage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Liquid Chrome Background Effect */}
-      <LiquidChrome 
-        baseColor={[0.75, 0.75, 0.75]} 
-        speed={0.15}
-        amplitude={0.25}
-        frequencyX={2.5}
-        frequencyY={2.5}
-        interactive={true}
-      />
+
+      <LiquidBackground>
       
       <Header />
       
@@ -127,6 +119,7 @@ export default function HomePage() {
       </main>
 
       <Footer />
+      </LiquidBackground>
     </div>
   );
 }
