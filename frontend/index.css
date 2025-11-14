@@ -1,50 +1,58 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-/* Estedad font - فونت استید */
-@import url('https://cdn.jsdelivr.net/gh/rastikerdar/estedad-font@v5.0.0/dist/Estedad-FD-WOL.css');
+/* Import New Style Systems */
+@import './styles/typography.css';
+@import './styles/colors.css';
+@import './styles/animations.css';
+
+/* Vazirmatn font - فونت وزیرمتن */
+/* Font is imported in index.html for better performance */
 
 /* ----- GLOBAL STYLES ----- */
 body {
-  font-family: 'Estedad FD', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Vazirmatn', 'IRANSans', 'Tahoma', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: #FFFFFF;
-  color: #1a1a1a;
-  line-height: 1.6;
+  color: var(--text-primary);
+  line-height: var(--leading-normal);
   margin: 0;
   padding: 0;
-}
-
-/* Typography */
-h1 { font-size: 3rem; font-weight: 300; letter-spacing: -0.02em; }
-h2 { font-size: 2.5rem; font-weight: 300; }
-h3 { font-size: 2rem; }
-h4 { font-size: 1.5rem; }
-h5 { font-size: 1.25rem; }
-h6 { font-size: 1rem; }
-
-p {
-  color: #4a4a4a;
-  line-height: 1.8;
+  direction: rtl;
+  text-align: right;
 }
 
 /* Scroll Behavior */
 html {
   scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Selection Color */
 ::selection {
-  background: #C9A961;
+  background: var(--accent-gold);
   color: white;
 }
 
 /* Links */
 a {
-  color: #1a1a1a;
+  color: var(--text-primary);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 a:hover {
-  color: #C9A961;
+  color: var(--accent-gold);
+}
+
+/* Remove default margins */
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure RTL for all containers */
+.container {
+  direction: rtl;
+  text-align: right;
 }
