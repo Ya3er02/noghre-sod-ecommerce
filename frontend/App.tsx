@@ -21,7 +21,7 @@ export default function App() {
         baseColor={[0.1, 0.1, 0.1]}
         speed={1}
         amplitude={0.6}
-        interactive={true}
+        interactive={true}>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <div className="min-h-screen bg-background" dir="rtl">
@@ -38,6 +38,7 @@ export default function App() {
           </div>
         </BrowserRouter>
       </QueryClientProvider>
+                      </LiquidChrome>
     </ClerkProvider>
   );
 }
