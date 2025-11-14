@@ -1,0 +1,47 @@
+/* پس‌زمینه Liquid با انیمیشن نقره‌ای */
+.liquid-background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  background-color: #000000; /* پس‌زمینه سیاه */
+}
+
+.liquid-background-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.liquid-background-content {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* تنظیمات Responsive */
+@media (max-width: 768px) {
+  .liquid-background-canvas {
+    /* بهینه‌سازی برای موبایل */
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
+  }
+}
+
+/* بهینه‌سازی عملکرد */
+.liquid-background-canvas {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
