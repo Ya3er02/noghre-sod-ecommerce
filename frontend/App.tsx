@@ -22,7 +22,7 @@ export default function App() {
         speed={1}
         amplitude={0.6}
         interactive={true}
-      />ueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <div className="min-h-screen bg-background" dir="rtl">
             <Routes>
