@@ -23,7 +23,7 @@ export default function Header() {
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-slate-400 to-slate-600">
               <span className="text-lg font-bold text-white">نُ</span>
             </div>
-            <span className="text-xl font-bold text-foreground">نقره سُد</span>
+            <span className="text-xl font-bold text-foreground">نقره سود</span>
           </Link>
 
           <nav className="hidden gap-6 md:flex">
