@@ -45,3 +45,101 @@
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
 }
+
+
+/* کارت‌های سه‌بعدی برای خوانایی متن */
+.content-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 1.5rem 0;
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    0 2px 8px rgba(192, 192, 192, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateZ(0);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.content-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(192, 192, 192, 0.5),
+    transparent
+  );
+}
+
+.content-card:hover {
+  transform: translateY(-4px) translateZ(0);
+  box-shadow: 
+    0 12px 48px 0 rgba(0, 0, 0, 0.5),
+    0 4px 16px rgba(192, 192, 192, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(192, 192, 192, 0.3);
+}
+
+/* انواع مختلف کارت */
+.content-card-primary {
+  background: rgba(192, 192, 192, 0.08);
+  border-color: rgba(192, 192, 192, 0.2);
+}
+
+.content-card-secondary {
+  background: rgba(169, 169, 169, 0.06);
+  border-color: rgba(169, 169, 169, 0.15);
+}
+
+/* سایه سه‌بعدی قوی‌تر */
+.content-card-elevated {
+  box-shadow: 
+    0 15px 50px rgba(0, 0, 0, 0.6),
+    0 5px 15px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  transform: perspective(1000px) rotateX(2deg);
+}
+
+.content-card-elevated:hover {
+  transform: perspective(1000px) rotateX(0deg) translateY(-8px);
+}
+
+/* متن داخل کارت */
+.content-card h1,
+.content-card h2,
+.content-card h3 {
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.content-card p {
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .content-card {
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border-radius: 12px;
+  }
+  
+  .content-card-elevated {
+    transform: none;
+  }
+  
+  .content-card-elevated:hover {
+    transform: translateY(-4px);
+  }
+}
