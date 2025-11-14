@@ -24,21 +24,21 @@ export default function HomePage() {
       <main className="flex-1">
         <section className="bg-gradient-to-br from-slate-50 to-slate-100 py-20 dark:from-slate-950 dark:to-slate-900">
           <div className="container mx-auto px-4">
-            <div className="mx-auto max-w-3xl text-center">
+            <div className="mx-auto max-w-3xl text-center animate-fade-in-up">
               <h1 className="mb-6 text-4xl font-bold text-foreground md:text-6xl">
                 سرمایه‌گذاری امن در نقره
               </h1>
               <p className="mb-8 text-lg text-muted-foreground">
-                با نقره سُد، هر محصول دارای شماره سریال یکتا و تضمین بازخرید است. سرمایه‌گذاری هوشمندانه را با ما تجربه کنید.
+                با نقره سود، هر محصول دارای شماره سریال یکتا و تضمین بازخرید است. سرمایه‌گذاری هوشمندانه را با ما تجربه کنید.
               </p>
               <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-                <Button asChild size="lg">
+                <Button asChild size="lg" className="btn-interactive btn-magnetic">
                   <Link to="/products">
                     مشاهده محصولات
                     <ArrowLeft className="mr-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg">
+                <Button asChild variant="outline" size="lg" className="btn-interactive">
                   <Link to="/value">ارزش‌یابی محصول</Link>
                 </Button>
               </div>
@@ -48,9 +48,9 @@ export default function HomePage() {
 
         <section className="py-16">
           <div className="container mx-auto px-4">
-            <div className="grid gap-8 md:grid-cols-3">
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+            <div className="grid gap-8 md:grid-cols-3 stagger-container">
+              <div className="flex flex-col items-center text-center card-lift">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 icon-bounce">
                   <Shield className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="mb-2 text-xl font-bold text-foreground">تضمین بازخرید</h3>
@@ -59,8 +59,8 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+              <div className="flex flex-col items-center text-center card-lift">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 icon-bounce">
                   <QrCode className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="mb-2 text-xl font-bold text-foreground">شماره سریال یکتا</h3>
@@ -69,8 +69,8 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+              <div className="flex flex-col items-center text-center card-lift">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 icon-bounce">
                   <TrendingUp className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="mb-2 text-xl font-bold text-foreground">قیمت لحظه‌ای</h3>
@@ -82,31 +82,31 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Featured Products Carousel */}
+        {featuredProducts && featuredProducts.length > 0 && (
+          <section className="bg-white py-16">
+            <div className="container mx-auto px-4">
+              <h2 className="mb-8 text-center text-4xl font-bold text-foreground animate-fade-in-up">محصولات ویژه</h2>
+              <ProductCarousel 
+                products={featuredProducts.slice(0, 5)} 
+                autoplay={true} 
+                autoplayDelay={6000}
+              />
+            </div>
+          </section>
+        )}
 
-              {/* Featured Products Carousel */}
-      {featuredProducts && featuredProducts.length > 0 && (
-        <section className="bg-white py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="mb-8 text-center text-4xl font-bold text-foreground">محصولات ویژه</h2>
-            <ProductCarousel 
-              products={featuredProducts.slice(0, 5)} 
-              autoplay={true} 
-              autoplayDelay={6000}
-            />
-          </div>
-        </section>
-      )}
         {featuredProducts && featuredProducts.length > 0 && (
           <section className="bg-muted/50 py-16">
             <div className="container mx-auto px-4">
-              <h2 className="mb-8 text-center text-3xl font-bold text-foreground">محصولات ویژه</h2>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <h2 className="mb-8 text-center text-3xl font-bold text-foreground animate-fade-in-up">محصولات ویژه</h2>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 stagger-container">
                 {featuredProducts.map((product) => (
                   <ProductCard key={product.id} {...product} />
                 ))}
               </div>
               <div className="mt-8 text-center">
-                <Button asChild variant="outline">
+                <Button asChild variant="outline" className="btn-interactive">
                   <Link to="/products">مشاهده همه محصولات</Link>
                 </Button>
               </div>
