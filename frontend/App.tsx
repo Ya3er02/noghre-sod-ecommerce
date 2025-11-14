@@ -17,9 +17,10 @@ const PUBLISHABLE_KEY = "pk_test_Z2l2aW5nLWN1Yi00NC5jbGVyay5hY2NvdW50cy5kZXYk";
 export default function App() {
   return (
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-              <LiquidChrome baseColor={[0.1, 0.1, 0.1]} speed={1} amplitude={0.6} frequencyX={3} frequencyY={3} interactive={true} />
+                      <LiquidChrome baseColor={[0.1, 0.1, 0.1]} speed={0.3} amplitude={0.4} />
+      <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <div className="min-h-screen bg-black text-white" dir="rtl">
+          <div className="min-h-screen bg-background" dir="rtl">
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/products" element={<ProductsPage />} />
