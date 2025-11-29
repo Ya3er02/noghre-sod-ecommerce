@@ -1,0 +1,78 @@
+{
+  "app": {
+    "name": "نقرة سود",
+    "tagline": "منصة بيع وشراء الفضة",
+    "description": "المنصة الأشمل لمنتجات الفضة في الشرق الأوسط"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "products": "المنتجات",
+    "categories": "الفئات",
+    "jewelry": "المجوهرات",
+    "handicrafts": "الحرف اليدوية",
+    "raw_silver": "الفضة الخام",
+    "about": "من نحن",
+    "contact": "اتصل بنا",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "dashboard": "لوحة التحكم",
+    "cart": "عربة التسوق",
+    "profile": "الملف الشخصي"
+  },
+  "actions": {
+    "add_to_cart": "أضف إلى السلة",
+    "buy_now": "اشترِ الآن",
+    "view_details": "عرض التفاصيل",
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "ترتيب",
+    "submit": "إرسال",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تحرير",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "confirm": "تأكيد",
+    "loading": "جارٍ التحميل..."
+  },
+  "currency": {
+    "irr": "ريال إيراني",
+    "usd": "دولار أمريكي",
+    "aed": "درهم إماراتي"
+  },
+  "units": {
+    "gram": "جرام",
+    "ounce": "أونصة",
+    "kilogram": "كيلوجرام"
+  },
+  "status": {
+    "available": "متاح",
+    "out_of_stock": "غير متوفر",
+    "pending": "قيد الانتظار",
+    "processing": "قيد المعالجة",
+    "shipped": "تم الشحن",
+    "delivered": "تم التسليم",
+    "cancelled": "ملغى",
+    "active": "نشط",
+    "inactive": "غير نشط"
+  },
+  "messages": {
+    "success": "تمت العملية بنجاح",
+    "error": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+    "warning": "تحذير",
+    "info": "معلومات",
+    "no_results": "لم يتم العثور على نتائج",
+    "loading": "جارٍ التحميل...",
+    "confirm_delete": "هل أنت متأكد من أنك تريد الحذف؟"
+  },
+  "footer": {
+    "about_us": "من نحن",
+    "contact_us": "اتصل بنا",
+    "privacy_policy": "سياسة الخصوصية",
+    "terms_of_service": "شروط الخدمة",
+    "faq": "الأسئلة الشائعة",
+    "all_rights_reserved": "جميع الحقوق محفوظة."
+  }
+}
