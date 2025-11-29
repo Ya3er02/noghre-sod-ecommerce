@@ -1,0 +1,78 @@
+{
+  "app": {
+    "name": "Noghre Sood",
+    "tagline": "Silver Trading Platform",
+    "description": "The Most Comprehensive Silver Products Platform in the Middle East"
+  },
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "categories": "Categories",
+    "jewelry": "Jewelry",
+    "handicrafts": "Handicrafts",
+    "raw_silver": "Raw Silver",
+    "about": "About Us",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Sign Up",
+    "dashboard": "Dashboard",
+    "cart": "Cart",
+    "profile": "Profile"
+  },
+  "actions": {
+    "add_to_cart": "Add to Cart",
+    "buy_now": "Buy Now",
+    "view_details": "View Details",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "confirm": "Confirm",
+    "loading": "Loading..."
+  },
+  "currency": {
+    "irr": "Iranian Rial",
+    "usd": "US Dollar",
+    "aed": "UAE Dirham"
+  },
+  "units": {
+    "gram": "gram",
+    "ounce": "ounce",
+    "kilogram": "kilogram"
+  },
+  "status": {
+    "available": "Available",
+    "out_of_stock": "Out of Stock",
+    "pending": "Pending",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "messages": {
+    "success": "Operation completed successfully",
+    "error": "An error occurred. Please try again.",
+    "warning": "Warning",
+    "info": "Information",
+    "no_results": "No results found",
+    "loading": "Loading...",
+    "confirm_delete": "Are you sure you want to delete?"
+  },
+  "footer": {
+    "about_us": "About Us",
+    "contact_us": "Contact Us",
+    "privacy_policy": "Privacy Policy",
+    "terms_of_service": "Terms of Service",
+    "faq": "FAQ",
+    "all_rights_reserved": "All rights reserved."
+  }
+}

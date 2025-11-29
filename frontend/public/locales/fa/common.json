@@ -1,0 +1,78 @@
+{
+  "app": {
+    "name": "نقره سود",
+    "tagline": "پلتفرم خرید و فروش نقره",
+    "description": "جامع‌ترین پلتفرم محصولات نقره در خاورمیانه"
+  },
+  "nav": {
+    "home": "خانه",
+    "products": "محصولات",
+    "categories": "دسته‌بندی‌ها",
+    "jewelry": "جواهرات",
+    "handicrafts": "صنایع دستی",
+    "raw_silver": "نقره خام",
+    "about": "درباره ما",
+    "contact": "تماس با ما",
+    "login": "ورود",
+    "register": "ثبت‌نام",
+    "dashboard": "پیشخوان",
+    "cart": "سبد خرید",
+    "profile": "پروفایل"
+  },
+  "actions": {
+    "add_to_cart": "افزودن به سبد خرید",
+    "buy_now": "خرید فوری",
+    "view_details": "مشاهده جزئیات",
+    "search": "جستجو",
+    "filter": "فیلتر",
+    "sort": "مرتب‌سازی",
+    "submit": "ثبت",
+    "cancel": "انصراف",
+    "save": "ذخیره",
+    "delete": "حذف",
+    "edit": "ویرایش",
+    "back": "بازگشت",
+    "next": "بعدی",
+    "previous": "قبلی",
+    "confirm": "تایید",
+    "loading": "در حال بارگذاری..."
+  },
+  "currency": {
+    "irr": "ریال",
+    "usd": "دلار",
+    "aed": "درهم"
+  },
+  "units": {
+    "gram": "گرم",
+    "ounce": "اونس",
+    "kilogram": "کیلوگرم"
+  },
+  "status": {
+    "available": "موجود",
+    "out_of_stock": "ناموجود",
+    "pending": "در انتظار",
+    "processing": "در حال پردازش",
+    "shipped": "ارسال شده",
+    "delivered": "تحویل داده شده",
+    "cancelled": "لغو شده",
+    "active": "فعال",
+    "inactive": "غیرفعال"
+  },
+  "messages": {
+    "success": "عملیات با موفقیت انجام شد",
+    "error": "خطایی رخ داد. لطفاً دوباره تلاش کنید.",
+    "warning": "هشدار",
+    "info": "اطلاعات",
+    "no_results": "نتیجه‌ای یافت نشد",
+    "loading": "در حال بارگذاری...",
+    "confirm_delete": "آیا مطمئن هستید که می‌خواهید حذف کنید؟"
+  },
+  "footer": {
+    "about_us": "درباره نقره سود",
+    "contact_us": "تماس با ما",
+    "privacy_policy": "حریم خصوصی",
+    "terms_of_service": "شرایط استفاده",
+    "faq": "سوالات متداول",
+    "all_rights_reserved": "کلیه حقوق محفوظ است."
+  }
+}
