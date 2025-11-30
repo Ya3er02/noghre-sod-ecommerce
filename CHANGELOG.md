@@ -95,7 +95,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 📋 Breaking Changes
 
-None - All changes are backward compatible.
+**⚠️ This release contains breaking changes for existing installations.**
+
+- **Environment Variables Now Required**: The application now requires a `frontend/.env.local` file with properly configured environment variables. The application will fail to start without this file.
+  - Hardcoded API keys have been removed from the codebase
+  - Environment validation is enforced at runtime using Zod
+  - All installations must create and populate `frontend/.env.local` from `frontend/.env.example`
+
+- **Build Output Directory Changed**: Build output moved from `build/` to `dist/`
+  - Any deployment scripts or configurations referencing `build/` must be updated
 
 ### 🚨 Migration Notes
 
