@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { Toaster } from "@/components/ui/toaster";
+import { env } from '@/lib/env';
 import HomePage from "./pages/HomePage";
 import ProductsPage from "./pages/ProductsPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
@@ -12,7 +13,7 @@ import FAQPage from "./pages/FAQPage";
 import LiquidChrome from '@/components/LiquidChrome';
 
 const queryClient = new QueryClient();
-const PUBLISHABLE_KEY = "pk_test_Z2l2aW5nLWN1Yi00NC5jbGVyay5hY2NvdW50cy5kZXYk";
+const PUBLISHABLE_KEY = env.VITE_CLERK_PUBLISHABLE_KEY;
 
 export default function App() {
   return (
