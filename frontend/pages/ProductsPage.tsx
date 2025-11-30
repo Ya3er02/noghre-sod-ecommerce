@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Grid, List, SlidersHorizontal } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
@@ -19,6 +19,7 @@ type ViewMode = 'grid' | 'list';
  * - Loading states
  * - Empty states
  * - Pagination
+ * - Dynamic filter counts
  */
 export function ProductsPage() {
   const [filters, setFilters] = useState<FilterState>({
@@ -61,6 +62,55 @@ export function ProductsPage() {
   const products = data?.products || [];
   const totalPages = data?.totalPages || 1;
   const totalCount = data?.totalCount || 0;
+
+  // Compute filter counts dynamically from all products
+  // Note: This computes counts from current page only.
+  // For accurate counts across all products, backend should provide facets.
+  const filterOptions = useMemo(() => {
+    // If no products loaded yet, return empty arrays
+    if (!products.length) {
+      return {
+        categories: [],
+        purities: [],
+      };
+    }
+
+    // Count products by category
+    const categoryCounts = products.reduce((acc, product) => {
+      const category = product.categoryId || 'other';
+      acc[category] = (acc[category] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    // Count products by purity (fineness)
+    const purityCounts = products.reduce((acc, product) => {
+      const purity = product.fineness === 925 ? '925' : '999';
+      acc[purity] = (acc[purity] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    // Map category IDs to labels (in real app, fetch from backend)
+    const categoryLabels: Record<string, string> = {
+      'necklace': 'گردنبند',
+      'bracelet': 'دستبند',
+      'earring': 'گوشواره',
+      'ring': 'انگشتر',
+      'pendant': 'پلاک',
+    };
+
+    return {
+      categories: Object.entries(categoryCounts).map(([value, count]) => ({
+        label: categoryLabels[value] || value,
+        value,
+        count,
+      })),
+      purities: Object.entries(purityCounts).map(([value, count]) => ({
+        label: `نقره ${value}`,
+        value,
+        count,
+      })),
+    };
+  }, [products]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -124,17 +174,8 @@ export function ProductsPage() {
             <div className="sticky top-24">
               <ProductFilter
                 onFilterChange={setFilters}
-                categories={[
-                  { label: 'گردنبند', value: 'necklace', count: 24 },
-                  { label: 'دستبند', value: 'bracelet', count: 18 },
-                  { label: 'گوشواره', value: 'earring', count: 32 },
-                  { label: 'انگشتر', value: 'ring', count: 15 },
-                  { label: 'پلاک', value: 'pendant', count: 12 },
-                ]}
-                purities={[
-                  { label: 'نقره 925', value: '925', count: 78 },
-                  { label: 'نقره 999', value: '999', count: 23 },
-                ]}
+                categories={filterOptions.categories}
+                purities={filterOptions.purities}
                 priceRange={{ min: 0, max: 100000000 }}
               />
             </div>
