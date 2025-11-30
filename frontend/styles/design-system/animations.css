@@ -1,0 +1,447 @@
+/**
+ * Animation System - Noghre Sood
+ * Version: 2.0.0
+ * انیمیشن‌های لوکس و حرفه‌ای برای فروشگاه جواهرات
+ */
+
+/* ========================================
+   Keyframe Animations
+   ======================================== */
+
+/* Fade Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scale Animations */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+/* Slide Animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* Shimmer Effect - برای لودینگ محصولات */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Pulse - برای دکمه‌های CTA */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Glow Effect - درخشش نقره/طلا */
+@keyframes silverGlow {
+  0%, 100% {
+    box-shadow: var(--shadow-silver);
+  }
+  50% {
+    box-shadow: var(--shadow-silver-strong);
+  }
+}
+
+@keyframes goldGlow {
+  0%, 100% {
+    box-shadow: var(--shadow-gold);
+  }
+  50% {
+    box-shadow: var(--shadow-gold-strong);
+  }
+}
+
+/* Bounce */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Spin */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Wiggle */
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+
+/* Float */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ========================================
+   Utility Animation Classes
+   ======================================== */
+
+/* Fade Utilities */
+.animate-fade-in {
+  animation: fadeIn var(--duration-base) var(--ease-out) forwards;
+}
+
+.animate-fade-out {
+  animation: fadeOut var(--duration-base) var(--ease-in) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp var(--duration-slow) var(--ease-luxury) forwards;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown var(--duration-slow) var(--ease-luxury) forwards;
+}
+
+/* Scale Utilities */
+.animate-scale-in {
+  animation: scaleIn var(--duration-base) var(--ease-out) forwards;
+}
+
+.animate-scale-out {
+  animation: scaleOut var(--duration-base) var(--ease-in) forwards;
+}
+
+/* Slide Utilities */
+.animate-slide-in-right {
+  animation: slideInRight var(--duration-slow) var(--ease-luxury) forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft var(--duration-slow) var(--ease-luxury) forwards;
+}
+
+/* Loading Utilities */
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-200) 0%,
+    var(--color-gray-300) 50%,
+    var(--color-gray-200) 100%
+  );
+  background-size: 1000px 100%;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Glow Utilities */
+.animate-silver-glow {
+  animation: silverGlow 2s ease-in-out infinite;
+}
+
+.animate-gold-glow {
+  animation: goldGlow 2s ease-in-out infinite;
+}
+
+/* Interaction Utilities */
+.animate-bounce {
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ========================================
+   Hover Effects - تعاملات ماوس
+   ======================================== */
+
+/* Lift Effect */
+.hover-lift {
+  transition: transform var(--duration-base) var(--ease-luxury),
+              box-shadow var(--duration-base) var(--ease-luxury);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Scale Effect */
+.hover-scale {
+  transition: transform var(--duration-base) var(--ease-luxury);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* Glow on Hover */
+.hover-glow-silver {
+  transition: box-shadow var(--duration-slow) var(--ease-luxury);
+}
+
+.hover-glow-silver:hover {
+  box-shadow: var(--shadow-silver-strong);
+}
+
+.hover-glow-gold {
+  transition: box-shadow var(--duration-slow) var(--ease-luxury);
+}
+
+.hover-glow-gold:hover {
+  box-shadow: var(--shadow-gold-strong);
+}
+
+/* Brightness Effect */
+.hover-brighten {
+  transition: filter var(--duration-base) var(--ease-luxury);
+}
+
+.hover-brighten:hover {
+  filter: brightness(1.1);
+}
+
+/* Border Glow */
+.hover-border-glow {
+  position: relative;
+  transition: border-color var(--duration-base) var(--ease-luxury);
+}
+
+.hover-border-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    45deg,
+    var(--color-silver-400),
+    var(--color-gold),
+    var(--color-silver-400)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-luxury);
+}
+
+.hover-border-glow:hover::before {
+  opacity: 1;
+}
+
+/* ========================================
+   Stagger Animations - انیمیشن تدریجی
+   ======================================== */
+
+.stagger-container > * {
+  opacity: 0;
+  animation: fadeInUp var(--duration-slow) var(--ease-luxury) forwards;
+}
+
+.stagger-container > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-container > *:nth-child(2) { animation-delay: 100ms; }
+.stagger-container > *:nth-child(3) { animation-delay: 200ms; }
+.stagger-container > *:nth-child(4) { animation-delay: 300ms; }
+.stagger-container > *:nth-child(5) { animation-delay: 400ms; }
+.stagger-container > *:nth-child(6) { animation-delay: 500ms; }
+.stagger-container > *:nth-child(7) { animation-delay: 600ms; }
+.stagger-container > *:nth-child(8) { animation-delay: 700ms; }
+.stagger-container > *:nth-child(9) { animation-delay: 800ms; }
+.stagger-container > *:nth-child(10) { animation-delay: 900ms; }
+
+/* ========================================
+   Loading Skeletons
+   ======================================== */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-200) 0%,
+    var(--color-gray-300) 50%,
+    var(--color-gray-200) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-base);
+}
+
+.skeleton-text {
+  height: 1em;
+  margin-bottom: var(--spacing-2);
+}
+
+.skeleton-title {
+  height: 2em;
+  width: 60%;
+  margin-bottom: var(--spacing-4);
+}
+
+.skeleton-image {
+  width: 100%;
+  height: 200px;
+  margin-bottom: var(--spacing-4);
+}
+
+/* ========================================
+   Scroll Animations - با Intersection Observer
+   ======================================== */
+
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity var(--duration-slower) var(--ease-luxury),
+              transform var(--duration-slower) var(--ease-luxury);
+}
+
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========================================
+   Performance Optimizations
+   ======================================== */
+
+/* Use GPU acceleration for animations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .scroll-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
