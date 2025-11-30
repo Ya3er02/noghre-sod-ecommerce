@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 
 /**
  * Debounce hook for delaying updates
@@ -52,17 +52,37 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
   delay: number = 500
 ): (...args: Parameters<T>) => void {
-  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+  // Use ref to avoid re-renders when timer changes
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const callbackRef = useRef(callback);
 
-  return (...args: Parameters<T>) => {
-    if (timer) {
-      clearTimeout(timer);
-    }
+  // Keep callback ref up to date
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
 
-    const newTimer = setTimeout(() => {
-      callback(...args);
-    }, delay);
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
-    setTimer(newTimer);
-  };
+  // Return stable function reference with useCallback
+  return useCallback(
+    (...args: Parameters<T>) => {
+      // Clear existing timeout
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      // Set new timeout
+      timerRef.current = setTimeout(() => {
+        callbackRef.current(...args);
+      }, delay);
+    },
+    [delay]
+  );
 }
