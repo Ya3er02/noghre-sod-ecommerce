@@ -65,8 +65,16 @@ jobs:
       - name: Type check
         run: bunx tsc --noEmit
       
+      # TODO: Add proper test suite - currently skipped if no test files exist
       - name: Run tests
-        run: bun test || echo "No tests configured yet"
+        run: |
+          if [ -d "test" ] || [ -d "tests" ] || [ -d "__tests__" ] || compgen -G "*.test.ts" > /dev/null || compgen -G "*.spec.ts" > /dev/null; then
+            echo "Running tests..."
+            bun test
+          else
+            echo "⚠️  No test files found. Skipping tests."
+            echo "ℹ️  Please add tests to ensure code quality."
+          fi
 
   security-scan:
     name: Security Audit
