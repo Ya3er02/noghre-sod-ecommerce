@@ -1,21 +1,44 @@
+# Auto-labeling configuration
+
 frontend:
   - frontend/**/*
+  - '*.tsx'
+  - '*.ts'
+  - '*.css'
 
 backend:
   - backend/**/*
 
 documentation:
-  - '**/*.md'
-  - 'docs/**/*'
+  - '*.md'
+  - docs/**/*
 
 ci/cd:
-  - '.github/**/*'
+  - .github/**/*
 
 dependencies:
   - '**/package.json'
   - '**/bun.lockb'
+  - '**/package-lock.json'
 
 configuration:
   - '**/*.config.*'
-  - '**/*.json'
   - '**/tsconfig.json'
+  - '**/.env.example'
+
+design-system:
+  - 'frontend/styles/**/*'
+  - 'frontend/components/ui/**/*'
+
+components:
+  - 'frontend/components/**/*'
+
+pages:
+  - 'frontend/pages/**/*'
+
+services:
+  - 'backend/*/service.ts'
+
+database:
+  - 'backend/*/migrations/**/*'
+  - 'backend/db/**/*'
