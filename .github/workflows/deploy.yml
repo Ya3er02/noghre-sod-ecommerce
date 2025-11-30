@@ -27,6 +27,7 @@ jobs:
       - name: Build frontend
         run: cd frontend && bun run build
         env:
+          MODE: production
           VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
           VITE_CLIENT_TARGET: ${{ secrets.VITE_CLIENT_TARGET }}
       
