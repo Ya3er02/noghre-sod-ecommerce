@@ -1,8 +1,8 @@
-import { Suspense, ComponentType } from 'react';
+import { Suspense, ComponentType, LazyExoticComponent } from 'react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface LazyRouteProps {
-  Component: React.LazyExoticComponent<ComponentType<any>>;
+  Component: LazyExoticComponent<ComponentType<any>>;
 }
 
 export function LazyRoute({ Component }: LazyRouteProps) {
