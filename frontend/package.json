@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "type-check": "tsc --noEmit",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
+    "format": "prettier --write \"./**/*.{ts,tsx,css}\""
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.35.2",
