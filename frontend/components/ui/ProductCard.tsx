@@ -207,7 +207,7 @@ export function ProductCard({
         )}
 
         {/* Rating */}
-        {rating && (
+        {rating !== undefined && rating !== null && typeof rating === 'number' && (
           <div className="flex items-center gap-2 mb-3">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
