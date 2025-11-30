@@ -3,11 +3,18 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 
 interface SilverPrice {
-  usd: number;
-  irt: number; // Iranian Toman
-  timestamp: Date;
+  usd: number; // Price per ounce (31.1g)
+  irr: number; // Iranian Rial
+  aed: number; // UAE Dirham
+  perGram: {
+    usd: number;
+    irr: number;
+    aed: number;
+  };
   change24h: number;
   changePercent24h: number;
+  lastUpdate: Date;
+  source: string;
 }
 
 /**
@@ -41,6 +48,8 @@ export function useSilverPriceHistory(
 
 /**
  * Hook for calculating product price based on silver weight
+ * @param weight - Weight in grams
+ * @param purity - Silver purity (925 or 999)
  */
 export function useProductPricing(weight: number, purity: '925' | '999' = '925') {
   const { data: silverPrice } = useSilverPrice();
@@ -58,8 +67,8 @@ export function useProductPricing(weight: number, purity: '925' | '999' = '925')
     const purityMultiplier = purity === '925' ? 0.925 : 0.999;
     const pureSilverGrams = weight * purityMultiplier;
 
-    // Silver value in IRT
-    const silverValue = (pureSilverGrams * silverPrice.irt) / 31.1035; // Convert to grams
+    // Silver value in IRR (use per-gram price)
+    const silverValue = pureSilverGrams * silverPrice.perGram.irr;
 
     // Crafting cost (20% of silver value)
     const craftingCost = silverValue * 0.2;
