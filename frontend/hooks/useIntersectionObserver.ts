@@ -76,7 +76,10 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLDivElement>(
  * 
  * @example
  * ```tsx
- * const [setRef, visibleStates] = useIntersectionObserverMultiple(5);
+ * const [setRef, visibleStates] = useIntersectionObserverMultiple(5, {
+ *   threshold: 0.3,
+ *   rootMargin: '0px',
+ * });
  * 
  * return items.map((item, i) => (
  *   <div 
@@ -99,6 +102,14 @@ export function useIntersectionObserverMultiple<T extends HTMLElement = HTMLDivE
     Array(count).fill(false)
   );
   const observerRef = useRef<IntersectionObserver | null>(null);
+
+  // Destructure options to avoid dependency on object reference
+  const {
+    threshold = 0,
+    root = null,
+    rootMargin = '0px',
+    freezeOnceVisible = false,
+  } = options;
 
   // Create stable callback refs using useMemo
   const setRef = useMemo(
@@ -136,12 +147,18 @@ export function useIntersectionObserverMultiple<T extends HTMLElement = HTMLDivE
             setVisibleStates((prev) => {
               const next = [...prev];
               next[index] = entry.isIntersecting;
+              
+              // Handle freezeOnceVisible
+              if (entry.isIntersecting && freezeOnceVisible && observerRef.current) {
+                observerRef.current.unobserve(entry.target as T);
+              }
+              
               return next;
             });
           }
         });
       },
-      options
+      { threshold, root, rootMargin }
     );
 
     // Observe all existing nodes
@@ -158,7 +175,7 @@ export function useIntersectionObserverMultiple<T extends HTMLElement = HTMLDivE
         observerRef.current = null;
       }
     };
-  }, [options]);
+  }, [threshold, root, rootMargin, freezeOnceVisible]); // Use individual values instead of options object
 
   return [setRef, visibleStates];
 }
