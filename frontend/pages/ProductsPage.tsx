@@ -51,7 +51,7 @@ export function ProductsPage() {
     filters.sortBy,
   ]);
   
-  const { data, isLoading, error } = useProducts({
+  const { data, isLoading, error, refetch } = useProducts({
     filters,
     pagination: {
       page: currentPage,
@@ -206,7 +206,7 @@ export function ProductsPage() {
                 <p className="text-gray-600 mb-6">
                   لطفاً دوباره تلاش کنید
                 </p>
-                <Button onClick={() => window.location.reload()}>
+                <Button onClick={() => refetch()}>
                   تلاش مجدد
                 </Button>
               </div>
