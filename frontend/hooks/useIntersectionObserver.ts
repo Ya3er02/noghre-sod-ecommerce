@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, RefObject } from 'react';
+import { useEffect, useRef, useState, useMemo, RefObject } from 'react';
 
 interface IntersectionObserverOptions extends IntersectionObserverInit {
   freezeOnceVisible?: boolean;
@@ -73,23 +73,65 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLDivElement>(
 /**
  * Multiple elements intersection observer
  * Useful for stagger animations
+ * 
+ * @example
+ * ```tsx
+ * const [setRef, visibleStates] = useIntersectionObserverMultiple(5);
+ * 
+ * return items.map((item, i) => (
+ *   <div 
+ *     key={item.id} 
+ *     ref={setRef(i)}
+ *     className={visibleStates[i] ? 'visible' : 'hidden'}
+ *   >
+ *     {item.content}
+ *   </div>
+ * ));
+ * ```
  */
 export function useIntersectionObserverMultiple<T extends HTMLElement = HTMLDivElement>(
   count: number,
   options: IntersectionObserverOptions = {}
-): [RefObject<T>[], boolean[]] {
-  const [refs] = useState<RefObject<T>[]>(() =>
-    Array.from({ length: count }, () => useRef<T>(null))
-  );
+): [(index: number) => (node: T | null) => void, boolean[]] {
+  // Single container ref for all elements
+  const nodesRef = useRef<Array<T | null>>(Array(count).fill(null));
   const [visibleStates, setVisibleStates] = useState<boolean[]>(
     Array(count).fill(false)
   );
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  // Create stable callback refs using useMemo
+  const setRef = useMemo(
+    () => (index: number) => (node: T | null) => {
+      // Store the node at the given index
+      const oldNode = nodesRef.current[index];
+      nodesRef.current[index] = node;
+
+      // If we have an observer, manage observations
+      if (observerRef.current) {
+        // Unobserve old node if it exists
+        if (oldNode) {
+          observerRef.current.unobserve(oldNode);
+        }
+        // Observe new node if it exists
+        if (node) {
+          observerRef.current.observe(node);
+        }
+      }
+    },
+    [] // Empty deps - function is stable
+  );
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    // Create observer
+    observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const index = refs.findIndex((ref) => ref.current === entry.target);
+          // Find index of the entry target
+          const index = nodesRef.current.findIndex(
+            (node) => node === entry.target
+          );
+          
           if (index !== -1) {
             setVisibleStates((prev) => {
               const next = [...prev];
@@ -102,18 +144,23 @@ export function useIntersectionObserverMultiple<T extends HTMLElement = HTMLDivE
       options
     );
 
-    refs.forEach((ref) => {
-      if (ref.current) {
-        observer.observe(ref.current);
+    // Observe all existing nodes
+    nodesRef.current.forEach((node) => {
+      if (node && observerRef.current) {
+        observerRef.current.observe(node);
       }
     });
 
+    // Cleanup
     return () => {
-      observer.disconnect();
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
     };
-  }, [refs, options]);
+  }, [options]);
 
-  return [refs, visibleStates];
+  return [setRef, visibleStates];
 }
 
 /**
