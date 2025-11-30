@@ -1,0 +1,21 @@
+frontend:
+  - frontend/**/*
+
+backend:
+  - backend/**/*
+
+documentation:
+  - '**/*.md'
+  - 'docs/**/*'
+
+ci/cd:
+  - '.github/**/*'
+
+dependencies:
+  - '**/package.json'
+  - '**/bun.lockb'
+
+configuration:
+  - '**/*.config.*'
+  - '**/*.json'
+  - '**/tsconfig.json'
