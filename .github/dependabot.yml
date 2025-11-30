@@ -6,30 +6,36 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 10
-    reviewers:
-      - "Ya3er02"
+      time: "09:00"
+    open-pull-requests-limit: 5
     labels:
       - "dependencies"
       - "frontend"
     commit-message:
-      prefix: "chore(deps)"
-  
+      prefix: "chore(deps):"
+    reviewers:
+      - "Ya3er02"
+    assignees:
+      - "Ya3er02"
+
   # Backend dependencies
   - package-ecosystem: "npm"
     directory: "/backend"
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 10
-    reviewers:
-      - "Ya3er02"
+      time: "09:00"
+    open-pull-requests-limit: 5
     labels:
       - "dependencies"
       - "backend"
     commit-message:
-      prefix: "chore(deps)"
-  
+      prefix: "chore(deps):"
+    reviewers:
+      - "Ya3er02"
+    assignees:
+      - "Ya3er02"
+
   # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -38,3 +44,5 @@ updates:
     labels:
       - "dependencies"
       - "ci/cd"
+    commit-message:
+      prefix: "chore(ci):"
