@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Grid, List, SlidersHorizontal } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
@@ -35,6 +35,20 @@ export function ProductsPage() {
   const itemsPerPage = 12;
 
   const isMobile = useMediaQuery('(max-width: 768px)');
+  
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    // Watch individual filter properties to avoid infinite loops
+    filters.categories.join(','),
+    filters.purities.join(','),
+    filters.priceRange.join(','),
+    filters.weightRange?.join(','),
+    filters.inStock,
+    filters.onSale,
+    filters.sortBy,
+  ]);
   
   const { data, isLoading, error } = useProducts({
     filters,
