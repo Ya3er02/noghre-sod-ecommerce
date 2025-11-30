@@ -7,13 +7,7 @@ interface LazyRouteProps {
 
 export function LazyRoute({ Component }: LazyRouteProps) {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <LoadingSpinner fullScreen />
-        </div>
-      }
-    >
+    <Suspense fallback={<LoadingSpinner fullScreen />}>
       <Component />
     </Suspense>
   );
