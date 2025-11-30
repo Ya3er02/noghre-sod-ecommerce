@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Product, ProductFilters, PaginationParams } from '@/lib/types';
 import { api } from '@/lib/api';
+import { useDebounce } from './useDebounce';
 
 interface UseProductsOptions {
   filters?: ProductFilters;
@@ -125,6 +126,3 @@ export function useSubmitReview() {
     },
   });
 }
-
-// Re-export debounce hook
-import { useDebounce } from './useDebounce';
