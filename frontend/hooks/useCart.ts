@@ -101,7 +101,11 @@ export const useCart = create<CartStore>()(
 
       getSubtotal: () => {
         return get().items.reduce(
-          (total, item) => total + item.product.price * item.quantity,
+          (total, item) => {
+            // Use currentPriceIrr if available (with live pricing), otherwise basePriceIrr
+            const price = item.product.currentPriceIrr ?? item.product.basePriceIrr;
+            return total + price * item.quantity;
+          },
           0
         );
       },
