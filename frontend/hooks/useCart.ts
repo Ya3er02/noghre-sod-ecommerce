@@ -139,13 +139,46 @@ export const useCart = create<CartStore>()(
     {
       name: 'noghre-sood-cart',
       storage: createJSONStorage(() => localStorage),
-      // Serialize/deserialize dates properly
+      
+      // Serialize dates to ISO strings for storage
       partialize: (state) => ({
         items: state.items.map((item) => ({
           ...item,
           addedAt: item.addedAt.toISOString(),
         })),
       }),
+      
+      // Deserialize ISO strings back to Date objects on rehydration
+      onRehydrateStorage: () => (state) => {
+        if (state?.items) {
+          state.items = state.items.map((item: any) => {
+            // Defensive check: convert addedAt to Date if it's a string
+            if (item.addedAt && typeof item.addedAt === 'string') {
+              try {
+                return {
+                  ...item,
+                  addedAt: new Date(item.addedAt),
+                };
+              } catch (error) {
+                // If date parsing fails, use current date as fallback
+                console.warn('Failed to parse addedAt date, using current date:', error);
+                return {
+                  ...item,
+                  addedAt: new Date(),
+                };
+              }
+            }
+            // If addedAt is missing or invalid, set to current date
+            if (!(item.addedAt instanceof Date)) {
+              return {
+                ...item,
+                addedAt: new Date(),
+              };
+            }
+            return item;
+          });
+        }
+      },
     }
   )
 );
