@@ -49,6 +49,7 @@
     "@typescript-eslint/parser": "^8.25.0",
     "@vitejs/plugin-react": "^4.6.0",
     "autoprefixer": "^10.4.20",
+    "babel-plugin-react-compiler": "^19.0.0-beta-8a03594-20250101",
     "eslint": "^9.21.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.20",
@@ -57,7 +58,7 @@
     "tw-animate-css": "^1.3.4",
     "typescript": "^5.8.3",
     "vite": "^6.2.5",
-    "vite-plugin-compression": "^0.5.1"
+    "vite-plugin-compression2": "^1.3.3"
   },
   "optionalDependencies": {
     "rollup": "^4.44.1"
