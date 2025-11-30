@@ -1,0 +1,38 @@
+name: Deploy to Liara
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://noghresood.shop
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      
+      - name: Install frontend dependencies
+        run: cd frontend && bun install
+      
+      - name: Build frontend
+        run: cd frontend && bun run build
+        env:
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+          VITE_CLIENT_TARGET: ${{ secrets.VITE_CLIENT_TARGET }}
+      
+      - name: Deploy to Liara
+        run: |
+          npm install -g @liara/cli
+          liara deploy --platform=node --port=3000 --app=noghre-sod --api-token=${{ secrets.LIARA_API_TOKEN }}
+        env:
+          LIARA_API_TOKEN: ${{ secrets.LIARA_API_TOKEN }}
