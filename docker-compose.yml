@@ -37,7 +37,7 @@ services:
     image: redis:7-alpine
     container_name: noghre_sod_redis
     restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-changeme}
     volumes:
       - redis_data:/data
     ports:
@@ -45,7 +45,7 @@ services:
     networks:
       - noghre_network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-changeme}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -70,8 +70,12 @@ services:
       - PORT=4000
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=${REDIS_URL}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
       - CLERK_SECRET_KEY=${CLERK_SECRET_KEY}
       - JWT_SECRET=${JWT_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
       - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
     env_file:
       - .env.production
