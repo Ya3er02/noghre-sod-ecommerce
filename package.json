@@ -1,6 +1,6 @@
 {
-  "name": "leap-app",
-  "version": "1.0.0",
+  "name": "noghre-sod-ecommerce",
+  "version": "2.0.0",
   "type": "module",
   "packageManager": "bun",
   "workspaces": [
@@ -8,5 +8,14 @@
     "frontend"
   ],
   "scripts": {
-    "build": "cd frontend && npm install && npm run build && cd .. && cp -r frontend/build build"  }
+    "dev:frontend": "cd frontend && bun run dev",
+    "dev:backend": "cd backend && encore run",
+    "build:frontend": "cd frontend && bun install && bun run build",
+    "build": "bun run build:frontend",
+    "start:backend": "cd backend && encore run --env=production",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
+  }
 }
