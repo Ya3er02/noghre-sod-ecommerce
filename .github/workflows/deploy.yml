@@ -158,7 +158,7 @@ jobs:
       # Optional: Send to Slack/Discord/Email
       - name: Send Slack notification
         if: success()
-        uses: slackapi/slack-github-action@v1
+        uses: slackapi/slack-github-action@v2
         with:
           payload: |
             {
