@@ -63,7 +63,7 @@ curl http://193.242.125.25/api
 
 ## Architecture
 
-```
+```text
 Internet (193.242.125.25)
     ↓
 Nginx (Port 80)
@@ -283,7 +283,7 @@ sudo lsof -i :4000
 5. **Backup database** regularly
 6. **Monitor logs** for suspicious activity
 7. **Use strong Clerk API keys**
-8. **Rotate secrets** periodically
+8. **Rotate secrets** periodically using `REGEN_SECRETS=true ./deploy-vps.sh`
 
 ## Support
 
