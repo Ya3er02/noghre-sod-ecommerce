@@ -111,6 +111,7 @@ if [ ! -f .env.production ]; then
     JWT_SECRET=$(openssl rand -base64 48)
     SESSION_SECRET=$(openssl rand -base64 48)
     POSTGRES_PASSWORD=$(openssl rand -base64 24)
+    REDIS_PASSWORD=$(openssl rand -base64 24)
     
     cat > .env.production << EOF
 NODE_ENV=production
@@ -122,7 +123,8 @@ DATABASE_URL=postgresql://noghre_user:${POSTGRES_PASSWORD}@postgres:5432/noghre_
 POSTGRES_USER=noghre_user
 POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 POSTGRES_DB=noghre_sod_db
-REDIS_URL=redis://redis:6379
+REDIS_PASSWORD=${REDIS_PASSWORD}
+REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
 REDIS_HOST=redis
 REDIS_PORT=6379
 ENCORE_APP_ID=noghre-sod-ecommerce-8e3i
