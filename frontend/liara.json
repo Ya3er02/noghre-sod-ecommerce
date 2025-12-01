@@ -1,8 +1,0 @@
-{
-  "platform": "react",
-  "app": "noghresood-f",
-  "build": {
-    "location": "dist"
-  },
-  "spa": true
-}
