@@ -28,6 +28,10 @@ NGINX_SITE="noghre-sod"
 SERVER_IP="193.242.125.25"
 BACKUP_DIR="/root/noghre_backups"
 
+# Health check configuration
+HEALTH_TIMEOUT=120  # seconds
+HEALTH_INTERVAL=5   # seconds
+
 # Parse command line arguments
 REGEN_SECRETS="${REGEN_SECRETS:-false}"
 for arg in "$@"; do
@@ -54,6 +58,46 @@ log_error() {
 
 log_debug() {
     echo -e "${BLUE}[DEBUG]${NC} $1"
+}
+
+# Wait for Docker Compose services to be healthy
+wait_for_health() {
+    local timeout=$1
+    local interval=$2
+    local elapsed=0
+    
+    log_info "Waiting for services to become healthy (timeout: ${timeout}s)..."
+    
+    while [ $elapsed -lt $timeout ]; do
+        # Get service health status
+        local all_healthy=true
+        
+        # Check each critical service
+        for service in postgres redis backend; do
+            local health=$(docker inspect --format='{{.State.Health.Status}}' "noghre_sod_${service}" 2>/dev/null || echo "unknown")
+            
+            if [ "$health" != "healthy" ]; then
+                log_debug "Service $service: $health"
+                all_healthy=false
+                break
+            fi
+        done
+        
+        if [ "$all_healthy" = true ]; then
+            log_info "\u2705 All services are healthy!"
+            return 0
+        fi
+        
+        sleep $interval
+        elapsed=$((elapsed + interval))
+        echo -ne "\r${BLUE}[DEBUG]${NC} Waiting... ${elapsed}/${timeout}s"
+    done
+    
+    echo ""
+    log_error "Services failed to become healthy within ${timeout}s"
+    log_error "Current status:"
+    docker compose ps
+    return 1
 }
 
 # ============================================
@@ -221,12 +265,12 @@ if [ -d "$APP_DIR" ]; then
         git ls-files --others --exclude-standard > "$FILELIST" 2>/dev/null || true
         
         if [ -s "$PATCH_FILE" ]; then
-            log_info "✅ Tracked changes backed up successfully"
+            log_info "\u2705 Tracked changes backed up successfully"
             log_info "   To restore: cd $APP_DIR && git apply $PATCH_FILE"
         fi
         
         if [ -s "$FILELIST" ]; then
-            log_info "✅ Untracked files list saved to $FILELIST"
+            log_info "\u2705 Untracked files list saved to $FILELIST"
         fi
     fi
     
@@ -280,7 +324,7 @@ CLERK_PUBLISHABLE_KEY=pk_live_YOUR_CLERK_PUBLISHABLE_KEY_HERE
 VITE_CLERK_PUBLISHABLE_KEY=pk_live_YOUR_CLERK_PUBLISHABLE_KEY_HERE
 EOF
     
-    log_info "✅ .env.production created with secure random secrets"
+    log_info "\u2705 .env.production created with secure random secrets"
     
 elif [ "$REGEN_SECRETS" = "true" ]; then
     # SECRET REGENERATION MODE
@@ -289,7 +333,7 @@ elif [ "$REGEN_SECRETS" = "true" ]; then
     
     mkdir -p "$BACKUP_DIR"
     cp "$ENV_FILE" "$ENV_BACKUP"
-    log_info "✅ Backup saved to: $ENV_BACKUP"
+    log_info "\u2705 Backup saved to: $ENV_BACKUP"
     
     # Generate new secrets
     log_info "Generating new secrets..."
@@ -309,9 +353,9 @@ elif [ "$REGEN_SECRETS" = "true" ]; then
     sed -i "s|postgresql://noghre_user:[^@]*@|postgresql://noghre_user:${NEW_POSTGRES_PASSWORD}@|" "$ENV_FILE"
     sed -i "s|redis://:[^@]*@|redis://:${NEW_REDIS_PASSWORD}@|" "$ENV_FILE"
     
-    log_info "✅ Secrets regenerated successfully!"
-    log_warn "⚠️  Database and Redis will be recreated with new passwords."
-    log_warn "⚠️  All existing data will be lost unless you restore from backup!"
+    log_info "\u2705 Secrets regenerated successfully!"
+    log_warn "\u26a0\ufe0f  Database and Redis will be recreated with new passwords."
+    log_warn "\u26a0\ufe0f  All existing data will be lost unless you restore from backup!"
     
 else
     # SUBSEQUENT RUNS - .env.production exists, no regeneration
@@ -324,9 +368,9 @@ fi
 # ============================================
 if grep -q "YOUR_CLERK.*_KEY_HERE" "$ENV_FILE"; then
     echo ""
-    log_warn "═══════════════════════════════════════════════════════════"
-    log_warn "⚠️  CLERK API KEYS NOT CONFIGURED!"
-    log_warn "═══════════════════════════════════════════════════════════"
+    log_warn "\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550"
+    log_warn "\u26a0\ufe0f  CLERK API KEYS NOT CONFIGURED!"
+    log_warn "\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550"
     log_warn "You MUST update these keys in: $ENV_FILE"
     log_warn ""
     log_warn "   CLERK_SECRET_KEY=sk_live_YOUR_CLERK_SECRET_KEY_HERE"
@@ -335,7 +379,7 @@ if grep -q "YOUR_CLERK.*_KEY_HERE" "$ENV_FILE"; then
     log_warn ""
     log_warn "Get keys from: https://dashboard.clerk.com"
     log_warn "After updating, restart backend: cd $APP_DIR && docker compose restart backend"
-    log_warn "═══════════════════════════════════════════════════════════"
+    log_warn "\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550"
     echo ""
 fi
 
@@ -349,16 +393,22 @@ bun run build
 cd ..
 
 # ============================================
-# 9. Docker Compose
+# 9. Docker Compose with Health Checks
 # ============================================
 log_info "Starting Docker containers..."
 docker compose down 2>/dev/null || true
 docker compose build
 docker compose up -d
-sleep 10
+
+# Wait for services to become healthy instead of blind sleep
+if ! wait_for_health "$HEALTH_TIMEOUT" "$HEALTH_INTERVAL"; then
+    log_error "Service health check failed. Check logs:"
+    docker compose logs --tail=50
+    exit 1
+fi
 
 # Verify containers started
-log_debug "Checking container status..."
+log_debug "Final container status:"
 docker compose ps
 
 # ============================================
@@ -376,15 +426,41 @@ nginx -t
 systemctl reload nginx
 
 # ============================================
-# 11. Setup Firewall
+# 11. Setup Firewall (SSH-Safe)
 # ============================================
 if command -v ufw &> /dev/null; then
-    log_info "Configuring firewall (UFW)..."
+    log_info "Configuring firewall (UFW - Safe SSH setup)..."
+    
+    # CRITICAL: Add SSH rule FIRST before enabling
+    log_debug "Ensuring SSH access is allowed..."
     ufw allow 22/tcp
+    ufw allow OpenSSH
+    
+    # Add other required ports
     ufw allow 80/tcp
     ufw allow 443/tcp
-    ufw --force enable
-    log_info "✅ Firewall configured (SSH, HTTP, HTTPS allowed)"
+    
+    # Verify SSH rule exists
+    if ufw status | grep -q "22.*ALLOW"; then
+        log_debug "SSH rule confirmed in UFW"
+    else
+        log_warn "SSH rule not found, adding explicitly..."
+        ufw allow 22/tcp
+    fi
+    
+    # Enable firewall (not using --force for safety)
+    log_info "Enabling firewall..."
+    echo "y" | ufw enable
+    
+    # Verify SSH is still allowed after enabling
+    if ufw status | grep -q "22.*ALLOW"; then
+        log_info "\u2705 Firewall enabled successfully (SSH preserved)"
+        ufw status verbose
+    else
+        log_error "SSH rule missing after firewall enable! Re-adding..."
+        ufw allow 22/tcp
+        log_warn "SSH access restored. Please verify connectivity."
+    fi
 fi
 
 # ============================================
@@ -416,13 +492,13 @@ systemctl enable noghre-sod.service
 # DEPLOYMENT COMPLETE
 # ============================================
 echo ""
-log_info "════════════════════════════════════════════════════════════"
-log_info "🎉 DEPLOYMENT COMPLETE!"
-log_info "════════════════════════════════════════════════════════════"
+log_info "\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550"
+log_info "\ud83c\udf89 DEPLOYMENT COMPLETE!"
+log_info "\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550"
 echo ""
-echo "🌐 Application URL:    http://${SERVER_IP}"
-echo "📁 Application Path:   ${APP_DIR}"
-echo "🔐 Backup Location:    ${BACKUP_DIR}"
+echo "\ud83c\udf10 Application URL:    http://${SERVER_IP}"
+echo "\ud83d\udcc1 Application Path:   ${APP_DIR}"
+echo "\ud83d\udd10 Backup Location:    ${BACKUP_DIR}"
 echo ""
 log_info "Next Steps:"
 echo "   1. Update Clerk API keys in: $ENV_FILE"
@@ -436,5 +512,5 @@ echo "   - Stop all:         docker compose down"
 echo "   - Check status:     docker compose ps"
 echo "   - Regenerate keys:  REGEN_SECRETS=true $0"
 echo ""
-log_info "════════════════════════════════════════════════════════════"
+log_info "\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550"
 echo ""
