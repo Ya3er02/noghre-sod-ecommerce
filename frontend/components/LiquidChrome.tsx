@@ -1,24 +1,35 @@
-import { useRef, useEffect } from 'react';
-import { Renderer, Program, Mesh, Triangle } from 'ogl';
+import { useRef, useEffect, type FC, type HTMLAttributes, type ReactNode } from 'react';
+import { Renderer, Program, Mesh, Triangle, type OGLRenderingContext } from 'ogl';
 import './LiquidChrome.css';
 
-export const LiquidChrome = ({
+interface LiquidChromeProps extends HTMLAttributes<HTMLDivElement> {
+  baseColor?: [number, number, number];
+  speed?: number;
+  amplitude?: number;
+  frequencyX?: number;
+  frequencyY?: number;
+  interactive?: boolean;
+  children?: ReactNode;
+}
+
+export const LiquidChrome: FC<LiquidChromeProps> = ({
   baseColor = [0.1, 0.1, 0.1],
   speed = 0.2,
   amplitude = 0.3,
   frequencyX = 3,
   frequencyY = 3,
   interactive = true,
+  children,
   ...props
 }) => {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const container = containerRef.current;
     const renderer = new Renderer({ antialias: true });
-    const gl = renderer.gl;
+    const gl = renderer.gl as OGLRenderingContext;
     gl.clearColor(1, 1, 1, 1);
 
     const vertexShader = `
@@ -93,10 +104,10 @@ export const LiquidChrome = ({
     });
     const mesh = new Mesh(gl, { geometry, program });
 
-    function resize() {
+    function resize(): void {
       const scale = 1;
       renderer.setSize(container.offsetWidth * scale, container.offsetHeight * scale);
-      const resUniform = program.uniforms.uResolution.value;
+      const resUniform = program.uniforms.uResolution.value as Float32Array;
       resUniform[0] = gl.canvas.width;
       resUniform[1] = gl.canvas.height;
       resUniform[2] = gl.canvas.width / gl.canvas.height;
@@ -104,24 +115,26 @@ export const LiquidChrome = ({
     window.addEventListener('resize', resize);
     resize();
 
-    function handleMouseMove(event) {
+    function handleMouseMove(event: MouseEvent): void {
       const rect = container.getBoundingClientRect();
       const x = (event.clientX - rect.left) / rect.width;
       const y = 1 - (event.clientY - rect.top) / rect.height;
-      const mouseUniform = program.uniforms.uMouse.value;
+      const mouseUniform = program.uniforms.uMouse.value as Float32Array;
       mouseUniform[0] = x;
       mouseUniform[1] = y;
     }
 
-    function handleTouchMove(event) {
+    function handleTouchMove(event: TouchEvent): void {
       if (event.touches.length > 0) {
         const touch = event.touches[0];
-        const rect = container.getBoundingClientRect();
-        const x = (touch.clientX - rect.left) / rect.width;
-        const y = 1 - (touch.clientY - rect.top) / rect.height;
-        const mouseUniform = program.uniforms.uMouse.value;
-        mouseUniform[0] = x;
-        mouseUniform[1] = y;
+        if (touch) {
+          const rect = container.getBoundingClientRect();
+          const x = (touch.clientX - rect.left) / rect.width;
+          const y = 1 - (touch.clientY - rect.top) / rect.height;
+          const mouseUniform = program.uniforms.uMouse.value as Float32Array;
+          mouseUniform[0] = x;
+          mouseUniform[1] = y;
+        }
       }
     }
 
@@ -130,8 +143,8 @@ export const LiquidChrome = ({
       container.addEventListener('touchmove', handleTouchMove);
     }
 
-    let animationId;
-    function update(t) {
+    let animationId: number;
+    function update(t: number): void {
       animationId = requestAnimationFrame(update);
       program.uniforms.uTime.value = t * 0.001 * speed;
       renderer.render({ scene: mesh });
@@ -150,11 +163,16 @@ export const LiquidChrome = ({
       if (gl.canvas.parentElement) {
         gl.canvas.parentElement.removeChild(gl.canvas);
       }
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      const loseContext = gl.getExtension('WEBGL_lose_context');
+      loseContext?.loseContext();
     };
   }, [baseColor, speed, amplitude, frequencyX, frequencyY, interactive]);
 
-  return <div ref={containerRef} className="liquidChrome-container" {...props} />;
+  return (
+    <div ref={containerRef} className="liquidChrome-container" {...props}>
+      {children}
+    </div>
+  );
 };
 
 export default LiquidChrome;
