@@ -12,19 +12,30 @@ The `.env.production` file containing live database passwords, Redis passwords, 
 
 ### Exposed Secrets
 
-- **Database Password**: `Ah$s7^kE@pM3*lF7` (PostgreSQL)
-- **Redis Password**: `J9#f9$vO2@kW5*mQ8!rZ4&rY1^hG9`
-- **Clerk API Keys**: 
-  - Public: `pk_test_ZmFzdC1saWdlci05Ni5jbGVyay5hY2NvdW50cy5kZXYk`
-  - Secret: `sk_test_N60B1ZvJFGvvw1eMZTR6nHv9cmUrfmLtlWL0XEIPot`
-- **Server IP**: `193.242.125.25`
-- **Database URL**: Fully exposed in DATABASE_URL variable
+> ⚠️ **SECURITY NOTE**: Actual compromised credential values have been removed from this document and stored in a secure internal location (confidential incident log). This prevents re-exposure in git history.
+
+The following types of credentials were exposed and **MUST be rotated immediately**:
+
+- **Database Password**: PostgreSQL user password (REDACTED - rotate immediately)
+- **Redis Password**: Redis authentication password (REDACTED - rotate immediately)
+- **Clerk API Keys**: Test environment keys (REDACTED - revoke and regenerate)
+  - Public key scope: Removed from repository
+  - Secret key scope: Removed from repository
+- **Server IP**: Infrastructure access details (REDACTED - review server access logs)
+- **Database URL**: Full connection string (REDACTED - rotate all credentials in URL)
 
 ### Affected Commits
+
+Commits containing `.env.production` file (exact commit SHAs documented in separate confidential incident log):
 
 1. `ce92882` - "Update .env.production" (52 min ago)
 2. `98f6528` - "Fix: Add REDIS_PASSWORD to .env.production template" (14h ago)
 3. `487357c` - "Add .env.production template for VPS deployment" (14h ago)
+
+**Required Actions**:
+1. Rotate ALL listed credentials immediately (see sections below)
+2. Run git history cleanup using git-filter-repo or BFG (see Git History Cleanup section)
+3. Force push cleaned branches to permanently remove secrets from git history
 
 ---
 
@@ -34,23 +45,23 @@ The `.env.production` file containing live database passwords, Redis passwords, 
 
 #### PostgreSQL Database
 ```bash
-# SSH into your Parspack server
-ssh root@193.242.125.25
+# SSH into your server
+ssh <SSH_USER>@<SSH_HOST>
 
 # Connect to PostgreSQL
-docker-compose exec postgres psql -U noghre_user -d noghre_sood_db
+docker-compose exec postgres psql -U <DB_USER> -d <DB_NAME>
 
 # Change password
-\\password noghre_user
+\password <DB_USER>
 # Enter new password: (use 32+ character random string)
 
 # Exit
-\\quit
+\quit
 ```
 
 **NEW PostgreSQL Password** (generate a new secure one):
-```
-POSTGRES_PASSWORD=GENERATE_NEW_SECURE_PASSWORD_HERE
+```bash
+POSTGRES_PASSWORD=<GENERATE_NEW_SECURE_PASSWORD_HERE>
 ```
 
 #### Redis Password
@@ -66,25 +77,25 @@ docker-compose up -d
 ```
 
 **NEW Redis Password**:
-```
-REDIS_PASSWORD=GENERATE_NEW_SECURE_PASSWORD_HERE
+```bash
+REDIS_PASSWORD=<GENERATE_NEW_SECURE_PASSWORD_HERE>
 ```
 
 #### Clerk API Keys
-1. Go to https://dashboard.clerk.com
+1. Go to [https://dashboard.clerk.com](https://dashboard.clerk.com)
 2. Navigate to API Keys section
 3. Revoke the current keys:
-   - `pk_test_ZmFzdC1saWdlci05Ni5jbGVyay5hY2NvdW50cy5kZXYk`
-   - `sk_test_N60B1ZvJFGvvw1eMZTR6nHv9cmUrfmLtlWL0XEIPot`
+   - Previous public key (documented in confidential incident log)
+   - Previous secret key (documented in confidential incident log)
 4. Generate new keys
 5. Update in:
    - `.env.production`
    - `frontend/.env.production`
 
 **NEW Clerk Keys**:
-```
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_GENERATE_NEW_KEY_HERE
-CLERK_SECRET_KEY=sk_GENERATE_NEW_KEY_HERE
+```bash
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<CLERK_PUBLIC_KEY>
+CLERK_SECRET_KEY=<CLERK_SECRET_KEY>
 ```
 
 #### JWT Secrets
@@ -97,9 +108,9 @@ echo "SESSION_SECRET=$SESSION_SECRET"
 ```
 
 **NEW JWT Secrets**:
-```
-JWT_SECRET=GENERATE_NEW_SECURE_STRING_HERE
-SESSION_SECRET=GENERATE_NEW_SECURE_STRING_HERE
+```bash
+JWT_SECRET=<GENERATE_NEW_SECURE_STRING_HERE>
+SESSION_SECRET=<GENERATE_NEW_SECURE_STRING_HERE>
 ```
 
 ---
@@ -232,6 +243,8 @@ Before considering this incident resolved:
 - [ ] Deployment scripts use environment variables from secure sources
 - [ ] Tests pass with new credentials
 - [ ] Server is updated with new credentials
+- [ ] Server access logs reviewed for unauthorized access attempts
+- [ ] Actual compromised values documented in secure internal incident log
 
 ---
 
@@ -241,11 +254,13 @@ Before considering this incident resolved:
 2. **Rotate ALL credentials** (follow steps above)
 3. **Clean git history** (use git-filter-repo)
 4. **Force push** cleaned history
-5. **Update Parspack server** with new credentials
+5. **Update server** with new credentials (use `<SSH_USER>@<SSH_HOST>`)
 6. **Test deployment**
 7. **Notify team** about new credentials and procedures
 8. **Implement pre-commit hooks**
 9. **Enable GitHub Secret Scanning**
+10. **Review server logs** for any unauthorized access during exposure window
+11. **Document incident details** in secure internal wiki/issue tracker
 
 ---
 
@@ -269,3 +284,9 @@ Use:
 - AWS Secrets Manager / Azure Key Vault for production
 - `.env.local` (git-ignored) for local development
 - `.env.example` for templates only
+
+**For This Incident**:
+- Actual compromised credential values are stored in a **secure internal location** (confidential issue or internal wiki)
+- This document contains only placeholders to prevent re-exposure in git history
+- All command examples use placeholder variables like `<SSH_HOST>`, `<DB_USER>`, `<REDIS_PASSWORD>`, etc.
+- Replace placeholders with actual values only when executing remediation steps in a secure environment
