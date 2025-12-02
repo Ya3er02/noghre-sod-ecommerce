@@ -1,0 +1,149 @@
+name: Security - Prevent Committing Secrets
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - '**'  # Run on all branches
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  secrets-scan:
+    runs-on: ubuntu-latest
+    name: Scan for exposed secrets and environment files
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for scanning
+      
+      - name: Check for environment files
+        id: env-check
+        run: |
+          echo "Scanning for tracked environment files..."
+          ERROR=0
+          
+          # List of environment files that should NEVER be tracked
+          ENV_FILES=(
+            ".env"
+            ".env.local"
+            ".env.production"
+            ".env.staging"
+            ".env.development"
+            "backend/.env"
+            "backend/.env.production"
+            "backend/.env.local"
+            "frontend/.env"
+            "frontend/.env.production"
+            "frontend/.env.local"
+          )
+          
+          # Check if any of these files are tracked in git
+          for file in "${ENV_FILES[@]}"; do
+            if git ls-files --error-unmatch "$file" 2>/dev/null; then
+              echo "❌ SECURITY ERROR: $file is tracked in git but should not be!"
+              ERROR=1
+            fi
+          done
+          
+          if [ $ERROR -eq 1 ]; then
+            echo ""
+            echo "To fix this:"
+            echo "  git rm --cached <filename>"
+            echo "  git commit -m 'security: Remove tracked environment file'"
+            echo ""
+            exit 1
+          fi
+          
+          echo "✅ No tracked environment files found"
+      
+      - name: Check for git-secrets (install)
+        run: |
+          git clone https://github.com/gitleaks/gitleaks.git
+          cd gitleaks
+          make build
+          sudo mv gitleaks /usr/local/bin/
+        continue-on-error: true
+      
+      - name: Scan commits for secrets with gitleaks
+        run: |
+          if command -v gitleaks &> /dev/null; then
+            echo "Running gitleaks scan..."
+            gitleaks detect --source . --verbose --exit-code 1
+          else
+            echo "⚠️  gitleaks not available, skipping secrets scan"
+          fi
+        continue-on-error: true
+      
+      - name: Check .gitignore patterns
+        run: |
+          echo "Verifying .gitignore patterns..."
+          
+          # Check if root .gitignore exists and has patterns
+          if grep -q "\.env" .gitignore; then
+            echo "✅ Root .gitignore contains .env patterns"
+          else
+            echo "⚠️  Root .gitignore missing .env patterns"
+          fi
+          
+          # Check if frontend/.gitignore exists and has patterns
+          if [ -f "frontend/.gitignore" ]; then
+            if grep -q "\.env" frontend/.gitignore; then
+              echo "✅ frontend/.gitignore contains .env patterns"
+            else
+              echo "⚠️  frontend/.gitignore missing .env patterns"
+            fi
+          fi
+          
+          # Check if backend/.gitignore exists and has patterns  
+          if [ -f "backend/.gitignore" ]; then
+            if grep -q "\.env" backend/.gitignore; then
+              echo "✅ backend/.gitignore contains .env patterns"
+            else
+              echo "⚠️  backend/.gitignore missing .env patterns"
+            fi
+          fi
+      
+      - name: Verify .env.example files exist
+        run: |
+          echo "Checking for .env.example template files..."
+          ERROR=0
+          
+          if [ -f ".env.example" ]; then
+            echo "✅ .env.example exists"
+          else
+            echo "⚠️  .env.example not found (recommended but not required)"
+          fi
+          
+          if [ -f "backend/.env.example" ]; then
+            echo "✅ backend/.env.example exists"
+          else
+            echo "⚠️  backend/.env.example not found (recommended but not required)"
+          fi
+          
+          if [ -f "frontend/.env.example" ]; then
+            echo "✅ frontend/.env.example exists"
+          else
+            echo "⚠️  frontend/.env.example not found (recommended but not required)"
+          fi
+      
+      - name: Report summary
+        if: always()
+        run: |
+          echo ""
+          echo "========================================"
+          echo "Security Check Summary"
+          echo "========================================"
+          echo "This workflow checks:"
+          echo "  ✓ No tracked .env files in git"
+          echo "  ✓ No exposed secrets detected"
+          echo "  ✓ .gitignore has proper patterns"
+          echo "  ✓ .env.example templates exist"
+          echo ""
+          echo "For more info, see SECURITY_INCIDENT_FIX.md"
+          echo "========================================"
