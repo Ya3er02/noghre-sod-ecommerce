@@ -12,6 +12,10 @@ export const LiquidChrome = ({
   ...props
 }) => {
   const containerRef = useRef(null);
+  
+  // Create stable scalar from baseColor array to prevent infinite re-renders
+  // when callers pass inline arrays (array reference changes on each render)
+  const colorKey = baseColor.join(',');
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -152,7 +156,7 @@ export const LiquidChrome = ({
       }
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [baseColor, speed, amplitude, frequencyX, frequencyY, interactive]);
+  }, [colorKey, speed, amplitude, frequencyX, frequencyY, interactive]);
 
   return <div ref={containerRef} className="liquidChrome-container" {...props} />;
 };
