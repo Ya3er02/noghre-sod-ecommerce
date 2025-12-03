@@ -161,8 +161,8 @@ docker exec <container-id> env | grep BACKEND
 # Check generated nginx config
 docker exec <container-id> cat /etc/nginx/conf.d/default.conf
 
-# Test backend connectivity
-docker exec <container-id> curl -I ${BACKEND_URL}/api/health
+# Test backend connectivity (run shell inside container to evaluate variable)
+docker exec <container-id> sh -c 'curl -I "$BACKEND_URL/api/health"'
 ```
 
 ### Build Issues
@@ -217,11 +217,39 @@ For production, consider serving static assets via CDN:
 
 ## Security Considerations
 
-- Container runs nginx as non-root user
-- Security headers prevent common attacks
+- **Container runs as root by default** (nginx:alpine base image). For enhanced security, add `USER nginx` to Dockerfile after installing packages (requires changing port binding from 80 to 8080 as non-root users cannot bind to ports < 1024)
+- Security headers prevent common attacks (XSS, clickjacking, MIME sniffing)
 - Hidden files (`.git`, `.env`, etc.) are blocked
 - Static files are served with immutable cache headers
 - API proxy prevents CORS issues
+
+### Running as Non-Root User (Optional)
+
+To run nginx as non-root user for enhanced security:
+
+1. Update `Dockerfile` to add USER directive and change port:
+   ```dockerfile
+   # ... existing build steps ...
+   
+   # Change nginx to listen on port 8080 instead of 80
+   RUN sed -i 's/listen 80;/listen 8080;/g' /etc/nginx/templates/default.conf.template && \
+       sed -i 's/listen \[::]:80;/listen [::]:8080;/g' /etc/nginx/templates/default.conf.template
+   
+   # Switch to nginx user
+   USER nginx
+   
+   # Expose non-privileged port
+   EXPOSE 8080
+   
+   # Update healthcheck to use new port
+   HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+     CMD curl -fS --retry 1 http://localhost:8080/ || exit 1
+   ```
+
+2. Update your docker run command to use port 8080:
+   ```bash
+   docker run -p 80:8080 noghre-sod-frontend:latest
+   ```
 
 ## CI/CD Integration
 
