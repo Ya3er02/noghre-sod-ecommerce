@@ -1,0 +1,32 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+
+# Check for secrets
+echo "1️⃣ Checking for exposed secrets..."
+if git diff --cached --name-only | grep -E "\.env$|\.env\.production$|\.env\.local$"; then
+    echo "❌ ERROR: Attempting to commit environment files!"
+    echo "   Remove them from staging with: git reset HEAD <file>"
+    exit 1
+fi
+
+# Check for hardcoded passwords
+echo "2️⃣ Scanning for hardcoded passwords..."
+if git diff --cached | grep -i -E "password\s*=\s*['\"][^'\"]+['\"]" | grep -v "CHANGE_ME" | grep -v "your_password"; then
+    echo "⚠️  WARNING: Possible hardcoded password detected!"
+    echo "   Please review your changes before committing."
+fi
+
+# Run type check on frontend if files changed (using subshell to preserve directory)
+echo "3️⃣ Checking for TypeScript changes..."
+if git diff --cached --name-only | grep -E "frontend/.*\.(ts|tsx)$" > /dev/null; then
+    echo "   Running TypeScript type check..."
+    # Use subshell to avoid changing current directory
+    if ! (cd frontend && bun run type-check); then
+        echo "❌ TypeScript errors found! Fix them before committing."
+        exit 1
+    fi
+fi
+
+echo "✅ Pre-commit checks passed!"
