@@ -8,14 +8,34 @@
     "frontend"
   ],
   "scripts": {
+    "dev": "concurrently \"bun run dev:backend\" \"bun run dev:frontend\"",
     "dev:frontend": "cd frontend && bun run dev",
     "dev:backend": "cd backend && encore run",
+    "build": "bun run build:frontend && bun run build:backend",
     "build:frontend": "cd frontend && bun install && bun run build",
-    "build": "bun run build:frontend",
-    "start:backend": "cd backend && encore run --env=production",
+    "build:backend": "cd backend && echo 'Encore builds automatically'",
+    "test": "bun run test:frontend && bun run test:backend",
+    "test:frontend": "cd frontend && bun test",
+    "test:backend": "cd backend && encore test",
+    "lint": "bun run lint:frontend",
+    "lint:frontend": "cd frontend && bun run lint",
+    "lint:fix": "cd frontend && bun run lint --fix",
+    "type-check": "cd frontend && bun run type-check",
+    "clean": "rm -rf frontend/dist frontend/node_modules/.vite backend/encore.gen",
+    "clean:all": "bun run clean && rm -rf node_modules frontend/node_modules backend/node_modules",
     "docker:build": "docker compose build",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
-    "docker:logs": "docker compose logs -f"
+    "docker:logs": "docker compose logs -f",
+    "docker:clean": "docker compose down -v --remove-orphans",
+    "start:backend": "cd backend && encore run --env=production",
+    "preview": "cd frontend && bun run preview",
+    "security:check": "bash scripts/verify-security.sh",
+    "security:audit": "bun audit && cd frontend && bun audit",
+    "prepare": "husky install || true"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "husky": "^9.0.11"
   }
 }
