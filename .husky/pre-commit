@@ -18,16 +18,15 @@ if git diff --cached | grep -i -E "password\s*=\s*['\"][^'\"]+['\"]" | grep -v "
     echo "   Please review your changes before committing."
 fi
 
-# Run type check on frontend if files changed
+# Run type check on frontend if files changed (using subshell to preserve directory)
 echo "3️⃣ Checking for TypeScript changes..."
 if git diff --cached --name-only | grep -E "frontend/.*\.(ts|tsx)$" > /dev/null; then
     echo "   Running TypeScript type check..."
-    cd frontend && bun run type-check
-    if [ $? -ne 0 ]; then
+    # Use subshell to avoid changing current directory
+    if ! (cd frontend && bun run type-check); then
         echo "❌ TypeScript errors found! Fix them before committing."
         exit 1
     fi
-    cd ..
 fi
 
 echo "✅ Pre-commit checks passed!"

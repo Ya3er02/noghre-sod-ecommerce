@@ -28,12 +28,12 @@ bun run dev
 ## 🔴 Critical Security Issue Fixed
 
 **What was exposed:**
-- ❌ Database password: `NoGhRe_S0od_DB_P@ssw0rd_8753!`
-- ❌ Redis password: `R3d!s_NoGhRe_C@che_4829!`
-- ❌ Clerk secret key: `sk_test_N60B1ZvJFGvvw1eMZTR6nHv9cmUrfmLtlWL0XEIPot`
-- ❌ JWT secret
-- ❌ Session secret
-- ❌ Server IP: `82.115.16.227`
+- ❌ Database password: `<REDACTED_ROTATE_IMMEDIATELY>`
+- ❌ Redis password: `<REDACTED_ROTATE_IMMEDIATELY>`
+- ❌ Clerk secret key: `<REDACTED_REGENERATE_AT_CLERK_DASHBOARD>`
+- ❌ JWT secret: `<REDACTED_GENERATE_NEW_SECRET>`
+- ❌ Session secret: `<REDACTED_GENERATE_NEW_SECRET>`
+- ❌ Server IP: `<REDACTED_CONTACT_ADMIN>`
 
 **Where it was:** Publicly visible in `.env.production` file committed to Git
 
@@ -247,3 +247,5 @@ bun run docker:build
 ---
 
 **This is a critical security update. Don't skip the credential rotation step!**
+
+**⚠️ IMPORTANT:** All credentials shown above have been redacted. The original credentials were exposed and MUST be rotated immediately. Contact your team's security administrator for the rotation procedure.

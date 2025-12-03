@@ -5,10 +5,29 @@ import { z } from 'zod';
  * Sanitize HTML content to prevent XSS attacks
  */
 export function sanitizeHTML(dirty: string): string {
-  return DOMPurify.sanitize(dirty, {
+  // Configure sanitizer with security best practices
+  const config = {
     ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br'],
     ALLOWED_ATTR: ['href', 'target', 'rel'],
+    ALLOW_UNKNOWN_PROTOCOLS: false, // Prevent unknown protocols
+  };
+
+  // Add hook to enforce rel="noopener noreferrer" on target="_blank" links
+  DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+    if (node.tagName === 'A') {
+      const anchor = node as HTMLAnchorElement;
+      if (anchor.getAttribute('target') === '_blank') {
+        anchor.setAttribute('rel', 'noopener noreferrer');
+      }
+    }
   });
+
+  const sanitized = DOMPurify.sanitize(dirty, config);
+
+  // Remove hook to avoid global side effects
+  DOMPurify.removeHook('afterSanitizeAttributes');
+
+  return sanitized;
 }
 
 /**
@@ -37,14 +56,14 @@ export function sanitizePhone(phone: string): string {
   // Remove all non-digit characters
   const cleaned = phone.replace(/\D/g, '');
   
-  // Validate Iranian phone number format
+  // Add leading 0 if missing (normalize "9..." to "09...")
+  const normalized = cleaned.startsWith('9') ? `0${cleaned}` : cleaned;
+  
+  // Validate Iranian phone number format - require normalized "09" prefix
   const phoneSchema = z.string().regex(
-    /^(09|9)\d{9}$/,
+    /^09\d{9}$/,
     'شماره تلفن باید ۱۱ رقم و با ۰۹ شروع شود'
   );
-  
-  // Add leading 0 if missing
-  const normalized = cleaned.startsWith('9') ? `0${cleaned}` : cleaned;
   
   return phoneSchema.parse(normalized);
 }
@@ -119,15 +138,41 @@ export function sanitizeSearchQuery(query: string): string {
 }
 
 /**
- * Rate limiting helper (client-side)
+ * Rate limiting helper (client-side) with periodic cleanup
  */
 export class RateLimiter {
   private attempts: Map<string, number[]> = new Map();
+  private cleanupInterval: ReturnType<typeof setInterval> | null = null;
   
   constructor(
     private maxAttempts: number = 5,
     private windowMs: number = 60000 // 1 minute
-  ) {}
+  ) {
+    // Start periodic cleanup to prevent memory leak
+    this.startCleanup();
+  }
+  
+  private startCleanup(): void {
+    // Run cleanup every half window period
+    this.cleanupInterval = setInterval(() => {
+      const now = Date.now();
+      const staleKeys: string[] = [];
+      
+      // Find stale entries
+      this.attempts.forEach((timestamps, identifier) => {
+        const recentAttempts = timestamps.filter(time => now - time < this.windowMs);
+        if (recentAttempts.length === 0) {
+          staleKeys.push(identifier);
+        } else if (recentAttempts.length < timestamps.length) {
+          // Update with only recent attempts
+          this.attempts.set(identifier, recentAttempts);
+        }
+      });
+      
+      // Remove stale entries
+      staleKeys.forEach(key => this.attempts.delete(key));
+    }, this.windowMs / 2);
+  }
   
   check(identifier: string): boolean {
     const now = Date.now();
@@ -149,6 +194,17 @@ export class RateLimiter {
   
   reset(identifier: string): void {
     this.attempts.delete(identifier);
+  }
+  
+  /**
+   * Stop periodic cleanup and clear all data
+   */
+  stop(): void {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = null;
+    }
+    this.attempts.clear();
   }
 }
 

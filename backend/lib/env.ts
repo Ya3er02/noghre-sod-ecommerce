@@ -13,14 +13,14 @@ const backendEnvSchema = z.object({
   FRONTEND_URL: z.string().url('FRONTEND_URL must be a valid URL'),
   BACKEND_URL: z.string().url('BACKEND_URL must be a valid URL').optional(),
   
-  // Database
+  // Database - increased minimum password length to 16
   DATABASE_URL: z.string().url('DATABASE_URL must be a valid connection string'),
   POSTGRES_USER: z.string().min(1, 'POSTGRES_USER is required'),
-  POSTGRES_PASSWORD: z.string().min(8, 'POSTGRES_PASSWORD must be at least 8 characters'),
+  POSTGRES_PASSWORD: z.string().min(16, 'POSTGRES_PASSWORD must be at least 16 characters'),
   POSTGRES_DB: z.string().min(1, 'POSTGRES_DB is required'),
   
-  // Redis
-  REDIS_PASSWORD: z.string().min(8, 'REDIS_PASSWORD must be at least 8 characters'),
+  // Redis - increased minimum password length to 16
+  REDIS_PASSWORD: z.string().min(16, 'REDIS_PASSWORD must be at least 16 characters'),
   REDIS_URL: z.string().url('REDIS_URL must be a valid connection string'),
   REDIS_HOST: z.string().default('redis'),
   REDIS_PORT: z.string().regex(/^\d+$/).transform(Number).default('6379'),
@@ -56,9 +56,14 @@ function validateBackendEnv(): BackendEnv {
     
     // Additional security checks
     if (parsed.NODE_ENV === 'production') {
-      // Ensure production uses live Clerk keys
+      // Ensure production uses live Clerk keys - THROW ERROR instead of warning
       if (!parsed.CLERK_SECRET_KEY.startsWith('sk_live_')) {
-        console.warn('⚠️  WARNING: Production should use live Clerk keys (sk_live_...)');
+        throw new Error(
+          `PRODUCTION SECURITY ERROR: Clerk secret key must use live keys (sk_live_...) in production. ` +
+          `Current environment: ${parsed.NODE_ENV}, ` +
+          `Key prefix: ${parsed.CLERK_SECRET_KEY.substring(0, 8)}... ` +
+          `Please regenerate live keys at https://dashboard.clerk.com`
+        );
       }
       
       // Ensure HTTPS in production

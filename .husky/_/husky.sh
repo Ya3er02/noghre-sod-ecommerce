@@ -6,7 +6,9 @@ if [ -z "$husky_skip_init" ]; then
     fi
   }
 
-  readonly hook_name="$(basename "$0")"
+  # Split readonly declaration to avoid SC2155
+  hook_name="$(basename "$0")"
+  readonly hook_name
   debug "starting $hook_name..."
 
   if [ "$HUSKY" = "0" ]; then
@@ -19,7 +21,11 @@ if [ -z "$husky_skip_init" ]; then
     . ~/.huskyrc
   fi
 
-  export readonly husky_skip_init=1
+  # Fix invalid 'export readonly' syntax
+  husky_skip_init=1
+  readonly husky_skip_init
+  export husky_skip_init
+  
   sh -e "$0" "$@"
   exitCode="$?"
 
