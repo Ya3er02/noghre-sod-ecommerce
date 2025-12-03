@@ -136,26 +136,7 @@ bun run clean
 
 ## محیط Production
 
-### متغیرهای محیطی Production
-
-برای production، متغیرهای زیر را در Liara Dashboard تنظیم کنید:
-
-- `VITE_CLERK_PUBLISHABLE_KEY`
-- `VITE_CLIENT_TARGET`
-- `VITE_API_URL`
-
-### Deploy کردن
-
-```bash
-# نصب Liara CLI
-npm install -g @liara/cli
-
-# لاگین
-liara login
-
-# Deploy
-liara deploy --app=noghre-sod --port=3000
-```
+برای اطلاعات کامل در مورد استقرار روی سرور VPS، لطفاً به فایل [VPS_DEPLOYMENT.md](./VPS_DEPLOYMENT.md) مراجعه کنید.
 
 ## پشتیبانی
 
@@ -167,4 +148,3 @@ liara deploy --app=noghre-sod --port=3000
 - [Vite Documentation](https://vitejs.dev/)
 - [React Documentation](https://react.dev/)
 - [Clerk Documentation](https://clerk.com/docs)
-- [Liara Documentation](https://docs.liara.ir/)
