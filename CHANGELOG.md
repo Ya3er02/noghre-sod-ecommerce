@@ -5,7 +5,15 @@ All notable changes to the Noghre Sood E-commerce Platform will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - 2025-11-30
+## [Unreleased] - 2025-12-03
+
+### 🚀 Deployment
+
+- **MIGRATION**: Moved from Liara to VPS cloud server deployment
+- Created `deploy-vps.sh` script for automated VPS deployment
+- Added comprehensive VPS deployment documentation (`VPS_DEPLOYMENT.md`)
+- Updated all documentation to reference VPS deployment instead of Liara
+- Removed Liara CLI references from setup and deployment guides
 
 ### 🔐 Security
 
@@ -53,8 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ESLint validation (non-blocking)
   - Security auditing
   - Build artifact uploading
-- **Deployment Automation**: Liara deployment workflow
-  - Automatic deployment on main branch push
+- **Deployment Automation**: VPS deployment workflow
+  - Automatic deployment via `deploy-vps.sh` script
   - Manual workflow dispatch option
   - Environment variable management
 - **PR Automation**: 
@@ -73,11 +81,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Installation instructions
   - Environment setup
   - Common troubleshooting
-  - Production deployment guide
+  - Removed Liara deployment references
 - Created `CHANGELOG.md` (this file)
+- Added `VPS_DEPLOYMENT.md` with comprehensive VPS deployment guide
 - Updated `.env.example` with comprehensive comments
 - Improved inline code documentation
 - Added helpful resource links
+- Removed all Liara references from:
+  - README.md
+  - SETUP.md
+  - DEPLOYMENT_GUIDE.md
+  - IMPLEMENTATION_SUMMARY.md
+  - COMPLETE_REBUILD_GUIDE.md
 
 ### 🛠️ Development
 
@@ -104,6 +119,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Build Output Directory Changed**: Build output moved from `build/` to `dist/`
   - Any deployment scripts or configurations referencing `build/` must be updated
+
+- **Deployment Platform Changed**: Migrated from Liara to VPS
+  - Previous Liara deployment configurations are deprecated
+  - Use `deploy-vps.sh` script for VPS deployment
+  - See `VPS_DEPLOYMENT.md` for migration guide
 
 ### 🚨 Migration Notes
 
@@ -132,6 +152,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - Build output changed from `build/` to `dist/`
    - Update any deployment scripts referencing `build/`
 
+5. **Deployment Migration** (From Liara to VPS):
+   - Review `VPS_DEPLOYMENT.md` for complete migration guide
+   - Set up VPS server environment
+   - Configure domain DNS settings
+   - Run `./deploy-vps.sh` for deployment
+
 ### 📊 Impact Metrics
 
 | Metric | Before | After | Improvement |
@@ -142,6 +168,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | Type Safety | Partial | Full | ✅ Complete |
 | CI/CD Coverage | 0% | 100% | ✅ New |
 | Documentation Coverage | Low | High | ✅ Improved |
+| Deployment Platform | Liara (deprecated) | VPS | ✅ Migrated |
 
 ### 🔗 Related Issues
 
@@ -151,6 +178,7 @@ This release addresses:
 - Missing CI/CD infrastructure
 - Documentation gaps
 - Development workflow inefficiencies
+- Platform migration from Liara to VPS
 
 ---
 
@@ -166,3 +194,4 @@ This release addresses:
 - Responsive design with Tailwind CSS
 - WebGL animations with OGL
 - Backend API with Encore.dev
+- Initial deployment on Liara (now deprecated)
