@@ -51,7 +51,7 @@ Noghre Sood is a specialized online e-commerce platform for buying and selling s
 - **API**: RESTful
 
 ### Deployment
-- **Platform**: Liara.ir
+- **Platform**: VPS Cloud Server
 - **Package Manager**: Bun
 
 ---
@@ -157,6 +157,7 @@ noghre-sod-ecommerce/
 ## 📚 Documentation
 
 - [Implementation Summary](./IMPLEMENTATION_SUMMARY.md) - Detailed implementation notes
+- [VPS Deployment Guide](./VPS_DEPLOYMENT.md) - VPS deployment instructions
 - [Development Guide](./DEVELOPMENT.md) - Development guidelines (if exists)
 
 ---
@@ -182,11 +183,13 @@ noghre-sod-ecommerce/
 
 ## 🚀 Deployment
 
-### Deploy to Liara
+For detailed deployment instructions to your VPS server, please refer to [VPS_DEPLOYMENT.md](./VPS_DEPLOYMENT.md).
+
+### Quick Deploy
 
 ```bash
-# From root directory
-liara deploy
+# Run the VPS deployment script
+./deploy-vps.sh
 ```
 
 ### Environment Variables
@@ -235,6 +238,7 @@ This project is proprietary and confidential.
 - ✅ Performance improvements with font preconnect
 - ✅ Enhanced accessibility
 - ✅ Modern card-based design system
+- ✅ Migrated to VPS deployment
 
 ---
 
