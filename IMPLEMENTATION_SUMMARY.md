@@ -322,9 +322,11 @@ git merge feature/comprehensive-ui-fixes
 git push origin main
 ```
 
-### 4. Deploy to Liara
+### 4. Deploy to VPS
+For deployment instructions, see [VPS_DEPLOYMENT.md](./VPS_DEPLOYMENT.md)
+
 ```bash
-liara deploy
+./deploy-vps.sh
 ```
 
 ---
@@ -336,6 +338,7 @@ liara deploy
 - `frontend/styles/typography.css` - Typography system
 - `frontend/styles/colors.css` - Color palette
 - `frontend/styles/animations.css` - Animation library
+- `VPS_DEPLOYMENT.md` - VPS deployment guide
 
 ### External Resources
 - [Vazirmatn Font](https://github.com/rastikerdar/vazirmatn)
@@ -365,7 +368,7 @@ liara deploy
 **Implementation Date**: November 14, 2025  
 **Branch**: `feature/comprehensive-ui-fixes`  
 **Status**: ✅ COMPLETE AND READY TO MERGE  
-**Next Action**: Test locally, then merge to main and deploy
+**Next Action**: Test locally, then merge to main and deploy to VPS
 
 ---
 

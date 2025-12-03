@@ -1,6 +1,6 @@
 # 🚀 Deployment Guide - Noghre Sood (نقره سود)
 
-## 🎯 Quick Deploy (3 Steps)
+## 🎯 Quick Deploy (VPS)
 
 ```bash
 # 1. Pull latest changes
@@ -11,9 +11,9 @@ git pull origin main
 cd frontend
 bun install
 
-# 3. Deploy to Liara
+# 3. Run VPS deployment script
 cd ..
-liara deploy
+./deploy-vps.sh
 ```
 
 **Done!** Visit: https://noghresood.shop ✅
@@ -86,37 +86,31 @@ bun run preview
 
 ---
 
-### Step 3: Deploy to Liara
+### Step 3: Deploy to VPS
+
+For complete VPS deployment instructions, please refer to [VPS_DEPLOYMENT.md](./VPS_DEPLOYMENT.md).
 
 ```bash
 # Go back to project root
 cd ..
 
-# Check Liara CLI is installed
-liara --version
-
-# If not installed:
-npm install -g @liara/cli
-
-# Login to Liara (if needed)
-liara login
-# Enter your email and password
-
-# Deploy the project
-liara deploy
+# Run the deployment script
+./deploy-vps.sh
 ```
 
 **During Deployment**:
-1. Select your app (or create new one)
-2. Confirm deployment
-3. Wait for upload and build process
-4. Get deployment URL
+1. Script will build the frontend
+2. Copy files to VPS
+3. Restart services
+4. Run health checks
 
 **Expected Output**:
 ```
-✓ App deployed successfully
-✓ URL: https://noghresood.liara.run
-✓ Custom domain: https://noghresood.shop
+✓ Build completed successfully
+✓ Files uploaded to VPS
+✓ Services restarted
+✓ Health checks passed
+✓ Deployment successful
 ```
 
 ---
@@ -176,30 +170,13 @@ liara deploy
 
 ## ⚠️ Troubleshooting
 
-### Issue: "Command not found: liara"
+### Issue: "Build failed"
 
 **Solution**:
-```bash
-npm install -g @liara/cli
-# or
-yarn global add @liara/cli
-```
-
-### Issue: "Authentication failed"
-
-**Solution**:
-```bash
-liara login
-# Enter your Liara email and password
-```
-
-### Issue: "Build failed on Liara"
-
-**Solution**:
-1. Check `liara.json` configuration
-2. Ensure all dependencies are in `package.json`
-3. Try local build first: `bun run build`
-4. Check Liara logs: `liara logs`
+1. Check `package.json` for missing dependencies
+2. Try local build first: `bun run build`
+3. Check build logs for errors
+4. Ensure all environment variables are set
 
 ### Issue: "LiquidChrome not visible"
 
@@ -228,7 +205,7 @@ liara login
 2. Clear all browser cache
 3. Try incognito/private mode
 4. Wait 2-3 minutes for CDN propagation
-5. Check deployment actually completed on Liara
+5. Check deployment actually completed
 
 ### Issue: "Animations not working"
 
@@ -237,32 +214,6 @@ liara login
 2. Verify classes are applied in components
 3. Check browser DevTools for CSS conflicts
 4. Test on different browser
-
----
-
-## 🔧 Liara Configuration
-
-### Check `liara.json` in root:
-
-```json
-{
-  "platform": "react",
-  "app": "noghresood",
-  "port": 3000,
-  "buildLocation": "frontend"
-}
-```
-
-### If you need to update:
-
-```bash
-# Edit liara.json
-# Then:
-git add liara.json
-git commit -m "Update Liara configuration"
-git push origin main
-liara deploy
-```
 
 ---
 
@@ -309,7 +260,7 @@ liara deploy
 - [ ] Test cart functionality
 
 ### Long-term (Within 24 hours)
-- [ ] Monitor error logs on Liara
+- [ ] Monitor error logs
 - [ ] Check analytics (if setup)
 - [ ] Get user feedback
 - [ ] Monitor performance
@@ -326,14 +277,14 @@ If something goes wrong:
 git log --oneline  # Find previous commit SHA
 git revert <commit-sha>
 git push origin main
-liara deploy
+./deploy-vps.sh
 ```
 
 **Or restore from backup**:
 ```bash
 git checkout <previous-commit-sha>
 git push origin main --force
-liara deploy
+./deploy-vps.sh
 ```
 
 ---
@@ -355,10 +306,10 @@ Once deployed successfully, your site will have:
 
 ## 📞 Support
 
-**Liara Support**: https://liara.ir/support  
+**VPS Deployment Guide**: [VPS_DEPLOYMENT.md](./VPS_DEPLOYMENT.md)  
 **Documentation**: Check README.md and IMPLEMENTATION_SUMMARY.md in repo
 
 ---
 
 **Made with ❤️ for Noghre Sood**  
-**Last Updated**: November 14, 2025
+**Last Updated**: December 2025
