@@ -1,14 +1,14 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
-  onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
 interface State {
   hasError: boolean;
   error?: Error;
+  errorInfo?: ErrorInfo;
 }
 
 class ErrorBoundary extends Component<Props, State> {
@@ -21,32 +21,78 @@ class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
-    this.props.onError?.(error, errorInfo);
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    
+    this.setState({
+      error,
+      errorInfo,
+    });
+
+    // Log to error reporting service (e.g., Sentry)
+    // if (window.Sentry) {
+    //   window.Sentry.captureException(error, { extra: errorInfo });
+    // }
   }
 
-  render() {
+  handleReset = (): void => {
+    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+    window.location.href = '/'; // Redirect to home
+  };
+
+  render(): ReactNode {
     if (this.state.hasError) {
+      // Custom fallback UI
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
       return (
-        this.props.fallback || (
-          <div className="min-h-screen flex items-center justify-center bg-background" dir="rtl">
-            <div className="text-center p-8 bg-card rounded-lg shadow-lg max-w-md">
-              <h2 className="text-2xl font-bold text-destructive mb-4">
-                خطایی رخ داده است
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                متأسفانه مشکلی پیش آمده. لطفاً صفحه را رفرش کنید.
+        <div className="min-h-screen flex items-center justify-center bg-background p-4" dir="rtl">
+          <div className="max-w-md w-full text-center space-y-6">
+            <div className="space-y-2">
+              <h1 className="text-4xl font-bold text-destructive">خطا!</h1>
+              <p className="text-lg text-muted-foreground">
+                متأسفانه مشکلی پیش آمده است.
               </p>
+            </div>
+
+            {this.state.error && (
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-right">
+                <p className="text-sm font-mono text-destructive">
+                  {this.state.error.toString()}
+                </p>
+              </div>
+            )}
+
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={this.handleReset}
+                className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              >
+                بازگشت به صفحه اصلی
+              </button>
+              
               <button
                 onClick={() => window.location.reload()}
-                className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                className="w-full px-6 py-3 border border-border rounded-lg font-medium hover:bg-accent transition-colors"
               >
-                رفرش صفحه
+                تلاش مجدد
               </button>
             </div>
+
+            {process.env.NODE_ENV === 'development' && this.state.errorInfo && (
+              <details className="text-left text-xs bg-muted p-4 rounded-lg overflow-auto max-h-64">
+                <summary className="cursor-pointer font-semibold mb-2">
+                  Stack Trace (Development Only)
+                </summary>
+                <pre className="whitespace-pre-wrap">
+                  {this.state.errorInfo.componentStack}
+                </pre>
+              </details>
+            )}
           </div>
-        )
+        </div>
       );
     }
 
