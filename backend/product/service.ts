@@ -40,8 +40,24 @@ export interface ProductFilters {
 }
 
 export interface PaginationParams {
-  page: number;
-  limit: number;
+  page?: number;
+  limit?: number;
+}
+
+export interface ListProductsParams {
+  // Filters as individual query params
+  categories?: string;
+  purities?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minWeight?: number;
+  maxWeight?: number;
+  inStock?: boolean;
+  onSale?: boolean;
+  sortBy?: 'newest' | 'price-asc' | 'price-desc' | 'popular' | 'weight';
+  // Pagination
+  page?: number;
+  limit?: number;
 }
 
 export interface ProductListResponse {
@@ -55,57 +71,70 @@ export interface ProductListResponse {
  * List Products with Filtering & Pagination
  * Implements best practices from luxury e-commerce
  */
-export const list = api(
+export const listProducts = api(
   { expose: true, method: 'GET', path: '/products' },
-  async (params: {
-    filters?: ProductFilters;
-    pagination?: PaginationParams;
-  }): Promise<ProductListResponse> => {
-    const { filters = {}, pagination = { page: 1, limit: 12 } } = params;
-    const offset = (pagination.page - 1) * pagination.limit;
+  async (params: ListProductsParams): Promise<ProductListResponse> => {
+    const {
+      categories,
+      purities,
+      minPrice,
+      maxPrice,
+      minWeight,
+      maxWeight,
+      inStock,
+      onSale,
+      sortBy = 'newest',
+      page = 1,
+      limit = 12,
+    } = params;
+
+    const offset = (page - 1) * limit;
 
     // Build WHERE clause
     const conditions: string[] = [];
     const values: any[] = [];
     let paramIndex = 1;
 
-    if (filters.categories && filters.categories.length > 0) {
+    if (categories) {
+      const categoriesArray = categories.split(',').map((c) => c.trim());
       conditions.push(`category = ANY($${paramIndex})`);
-      values.push(filters.categories);
+      values.push(categoriesArray);
       paramIndex++;
     }
 
-    if (filters.purities && filters.purities.length > 0) {
+    if (purities) {
+      const puritiesArray = purities.split(',').map((p) => p.trim());
       conditions.push(`purity = ANY($${paramIndex})`);
-      values.push(filters.purities);
+      values.push(puritiesArray);
       paramIndex++;
     }
 
-    if (filters.priceRange) {
+    if (minPrice !== undefined && maxPrice !== undefined) {
       conditions.push(`price BETWEEN $${paramIndex} AND $${paramIndex + 1}`);
-      values.push(filters.priceRange[0], filters.priceRange[1]);
+      values.push(minPrice, maxPrice);
       paramIndex += 2;
     }
 
-    if (filters.weightRange) {
+    if (minWeight !== undefined && maxWeight !== undefined) {
       conditions.push(`weight BETWEEN $${paramIndex} AND $${paramIndex + 1}`);
-      values.push(filters.weightRange[0], filters.weightRange[1]);
+      values.push(minWeight, maxWeight);
       paramIndex += 2;
     }
 
-    if (filters.inStock) {
+    if (inStock !== undefined && inStock === true) {
       conditions.push(`in_stock = true`);
     }
 
-    if (filters.onSale) {
+    if (onSale !== undefined && onSale === true) {
       conditions.push(`discount > 0`);
     }
 
-    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const whereClause =
+      conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
     // Build ORDER BY clause
     let orderBy = 'created_at DESC'; // Default: newest first
-    switch (filters.sortBy) {
+    switch (sortBy) {
       case 'price-asc':
         orderBy = 'price ASC';
         break;
@@ -132,7 +161,7 @@ export const list = api(
       ORDER BY ${orderBy}
       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
     `;
-    values.push(pagination.limit, offset);
+    values.push(limit, offset);
 
     const result = await db.query(query, values);
     const products = result.rows.map(mapRowToProduct);
@@ -140,8 +169,8 @@ export const list = api(
     return {
       products,
       totalCount,
-      totalPages: Math.ceil(totalCount / pagination.limit),
-      currentPage: pagination.page,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page,
     };
   }
 );
@@ -149,13 +178,12 @@ export const list = api(
 /**
  * Get Single Product by ID
  */
-export const getById = api(
+export const getProductById = api(
   { expose: true, method: 'GET', path: '/products/:id' },
   async ({ id }: { id: string }): Promise<Product> => {
-    const result = await db.query(
-      'SELECT * FROM products WHERE id = $1',
-      [id]
-    );
+    const result = await db.query('SELECT * FROM products WHERE id = $1', [
+      id,
+    ]);
 
     if (result.rows.length === 0) {
       throw APIError.notFound('Product not found');
@@ -168,7 +196,7 @@ export const getById = api(
 /**
  * Get Featured Products
  */
-export const getFeatured = api(
+export const getFeaturedProducts = api(
   { expose: true, method: 'GET', path: '/products/featured' },
   async ({ limit = 8 }: { limit?: number }): Promise<Product[]> => {
     const result = await db.query(
@@ -183,7 +211,7 @@ export const getFeatured = api(
 /**
  * Get Related Products (Cross-sell)
  */
-export const getRelated = api(
+export const getRelatedProducts = api(
   { expose: true, method: 'GET', path: '/products/:id/related' },
   async ({ id, limit = 4 }: { id: string; limit?: number }): Promise<Product[]> => {
     // Get product category
@@ -214,7 +242,7 @@ export const getRelated = api(
 /**
  * Search Products
  */
-export const search = api(
+export const searchProducts = api(
   { expose: true, method: 'GET', path: '/products/search' },
   async ({ query }: { query: string }): Promise<Product[]> => {
     const result = await db.query(
@@ -232,9 +260,9 @@ export const search = api(
 /**
  * Get Product Categories
  */
-export const getCategories = api(
+export const getProductCategories = api(
   { expose: true, method: 'GET', path: '/products/categories' },
-  async (): Promise<{ name: string; count: number }[]> => {
+  async (): Promise<Array<{ name: string; count: number }>> => {
     const result = await db.query(
       `SELECT category as name, COUNT(*) as count 
        FROM products 
@@ -242,7 +270,7 @@ export const getCategories = api(
        ORDER BY count DESC`
     );
 
-    return result.rows.map((row) => ({
+    return result.rows.map((row: any) => ({
       name: row.name,
       count: parseInt(row.count),
     }));
@@ -252,9 +280,11 @@ export const getCategories = api(
 /**
  * Create Product (Admin only)
  */
-export const create = api(
+export const createProduct = api(
   { expose: true, method: 'POST', path: '/products', auth: true },
-  async (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product> => {
+  async (
+    product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<Product> => {
     const result = await db.query(
       `INSERT INTO products (
         name, name_en, description, price, original_price, weight, purity,
@@ -289,9 +319,12 @@ export const create = api(
 /**
  * Update Product (Admin only)
  */
-export const update = api(
+export const updateProduct = api(
   { expose: true, method: 'PUT', path: '/products/:id', auth: true },
-  async ({ id, ...updates }: Partial<Product> & { id: string }): Promise<Product> => {
+  async ({
+    id,
+    ...updates
+  }: Partial<Product> & { id: string }): Promise<Product> => {
     const result = await db.query(
       `UPDATE products 
        SET name = COALESCE($2, name),
@@ -320,12 +353,15 @@ function mapRowToProduct(row: any): Product {
     nameEn: row.name_en,
     description: row.description,
     price: parseFloat(row.price),
-    originalPrice: row.original_price ? parseFloat(row.original_price) : undefined,
+    originalPrice: row.original_price
+      ? parseFloat(row.original_price)
+      : undefined,
     weight: parseFloat(row.weight),
     purity: row.purity,
     serialNumber: row.serial_number,
     category: row.category,
-    images: typeof row.images === 'string' ? JSON.parse(row.images) : row.images,
+    images:
+      typeof row.images === 'string' ? JSON.parse(row.images) : row.images,
     inStock: row.in_stock,
     isNew: row.is_new,
     isFeatured: row.is_featured,
