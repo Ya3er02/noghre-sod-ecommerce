@@ -7,14 +7,25 @@
     "dev": "encore run",
     "test": "encore test",
     "build": "echo 'Encore builds automatically'",
-    "start": "encore run --env=production"
+    "start": "encore run --env=production",
+    "install:deps": "bun install"
   },
   "dependencies": {
     "@clerk/backend": "^1.27.0",
     "encore.dev": "^1.51.6",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "openai": "^4.65.0",
+    "express": "^4.19.2",
+    "axios": "^1.7.7",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.4.0",
+    "qrcode": "^1.5.4",
+    "speakeasy": "^2.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "@types/express": "^4.17.21",
+    "@types/qrcode": "^1.5.5",
+    "@types/speakeasy": "^2.0.10"
   }
 }
