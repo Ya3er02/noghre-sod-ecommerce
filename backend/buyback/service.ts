@@ -1,9 +1,11 @@
 import { api, APIError } from 'encore.dev/api';
 import { SQLDatabase } from 'encore.dev/storage/sqldb';
 import { getSilverSpot } from '../price/service';
+import * as path from 'path';
 
+// Use __dirname to ensure correct path resolution
 const db = new SQLDatabase('buyback', {
-  migrations: './migrations',
+  migrations: path.join(__dirname, 'migrations'),
 });
 
 /**
