@@ -31,6 +31,13 @@ export interface PriceHistory {
   price: number;
 }
 
+// Wrapper interface for history response (Encore requirement)
+export interface PriceHistoryResponse {
+  data: PriceHistory[];
+  period: string;
+  count: number;
+}
+
 // Store latest price in memory for fast access
 let latestPrice: SilverPrice | null = null;
 
@@ -62,10 +69,11 @@ export const getSilverSpot = api(
 
 /**
  * Get Historical Silver Price Data
+ * Fixed: Wrapped array return in interface to satisfy Encore type requirements
  */
 export const getSilverHistory = api(
   { expose: true, method: 'GET', path: '/prices/silver/history' },
-  async ({ period = '7d' }: { period?: '24h' | '7d' | '30d' | '1y' }): Promise<PriceHistory[]> => {
+  async ({ period = '7d' }: { period?: '24h' | '7d' | '30d' | '1y' }): Promise<PriceHistoryResponse> => {
     let interval: string;
     let duration: string;
 
@@ -99,10 +107,16 @@ export const getSilverHistory = api(
       [interval, duration]
     );
 
-    return result.rows.map((row) => ({
+    const data = result.rows.map((row) => ({
       timestamp: new Date(row.bucket),
       price: parseFloat(row.price),
     }));
+
+    return {
+      data,
+      period,
+      count: data.length,
+    };
   }
 );
 
