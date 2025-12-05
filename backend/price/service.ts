@@ -172,10 +172,11 @@ export const calculateProductPrice = api(
 
 /**
  * Cron Job: Update Silver Price Every Minute
+ * Fixed: Changed time format from '1min' to '1m' (Encore TimeDuration format)
  */
 const _ = new CronJob('update-silver-price', {
   title: 'Update Silver Spot Price',
-  every: '1min',
+  every: '1m', // Encore format: ns, us, ms, s, m, h, d, w, y
   endpoint: updateSilverPrice,
 });
 
