@@ -1,9 +1,11 @@
 import { api } from 'encore.dev/api';
 import { CronJob } from 'encore.dev/cron';
 import { SQLDatabase } from 'encore.dev/storage/sqldb';
+import * as path from 'path';
 
+// Use __dirname to ensure correct path resolution
 const db = new SQLDatabase('price', {
-  migrations: './migrations',
+  migrations: path.join(__dirname, 'migrations'),
 });
 
 /**

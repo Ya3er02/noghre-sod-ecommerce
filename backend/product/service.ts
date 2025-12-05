@@ -1,9 +1,10 @@
 import { api, APIError } from 'encore.dev/api';
 import { SQLDatabase } from 'encore.dev/storage/sqldb';
+import * as path from 'path';
 
-// Database connection
+// Database connection - use __dirname for correct path resolution
 const db = new SQLDatabase('product', {
-  migrations: './migrations',
+  migrations: path.join(__dirname, 'migrations'),
 });
 
 // Types
