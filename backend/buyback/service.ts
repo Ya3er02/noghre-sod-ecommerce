@@ -46,6 +46,12 @@ export interface BuybackCalculation {
   };
 }
 
+// Wrapper interface for list response (Encore requirement)
+export interface BuybackRequestsList {
+  requests: BuybackRequest[];
+  total: number;
+}
+
 /**
  * Calculate Buyback Price
  */
@@ -221,10 +227,11 @@ export const getRequest = api(
 
 /**
  * List User Buyback Requests
+ * Fixed: Wrapped array return in interface to satisfy Encore type requirements
  */
 export const listRequests = api(
   { expose: true, method: 'GET', path: '/buyback/requests', auth: true },
-  async (): Promise<BuybackRequest[]> => {
+  async (): Promise<BuybackRequestsList> => {
     const result = await db.query(
       `SELECT * FROM buyback_requests 
        WHERE user_id = $1 
@@ -232,7 +239,12 @@ export const listRequests = api(
       ['current-user-id'] // TODO: Get from auth context
     );
 
-    return result.rows.map(mapRowToBuybackRequest);
+    const requests = result.rows.map(mapRowToBuybackRequest);
+
+    return {
+      requests,
+      total: requests.length,
+    };
   }
 );
 
