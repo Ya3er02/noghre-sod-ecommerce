@@ -68,6 +68,17 @@ export interface ProductListResponse {
   currentPage: number;
 }
 
+// Wrapper interfaces for array responses (Encore requirement)
+export interface ProductsResponse {
+  products: Product[];
+  count: number;
+}
+
+export interface CategoryResponse {
+  categories: Array<{ name: string; count: number }>;
+  total: number;
+}
+
 /**
  * List Products with Filtering & Pagination
  * Implements best practices from luxury e-commerce
@@ -196,25 +207,32 @@ export const getProductById = api(
 
 /**
  * Get Featured Products
+ * Fixed: Wrapped array return in interface to satisfy Encore type requirements
  */
 export const getFeaturedProducts = api(
   { expose: true, method: 'GET', path: '/products/featured' },
-  async ({ limit = 8 }: { limit?: number }): Promise<Product[]> => {
+  async ({ limit = 8 }: { limit?: number }): Promise<ProductsResponse> => {
     const result = await db.query(
       'SELECT * FROM products WHERE is_featured = true ORDER BY created_at DESC LIMIT $1',
       [limit]
     );
 
-    return result.rows.map(mapRowToProduct);
+    const products = result.rows.map(mapRowToProduct);
+
+    return {
+      products,
+      count: products.length,
+    };
   }
 );
 
 /**
  * Get Related Products (Cross-sell)
+ * Fixed: Wrapped array return in interface to satisfy Encore type requirements
  */
 export const getRelatedProducts = api(
   { expose: true, method: 'GET', path: '/products/:id/related' },
-  async ({ id, limit = 4 }: { id: string; limit?: number }): Promise<Product[]> => {
+  async ({ id, limit = 4 }: { id: string; limit?: number }): Promise<ProductsResponse> => {
     // Get product category
     const productResult = await db.query(
       'SELECT category FROM products WHERE id = $1',
@@ -236,16 +254,22 @@ export const getRelatedProducts = api(
       [category, id, limit]
     );
 
-    return result.rows.map(mapRowToProduct);
+    const products = result.rows.map(mapRowToProduct);
+
+    return {
+      products,
+      count: products.length,
+    };
   }
 );
 
 /**
  * Search Products
+ * Fixed: Wrapped array return in interface to satisfy Encore type requirements
  */
 export const searchProducts = api(
   { expose: true, method: 'GET', path: '/products/search' },
-  async ({ query }: { query: string }): Promise<Product[]> => {
+  async ({ query }: { query: string }): Promise<ProductsResponse> => {
     const result = await db.query(
       `SELECT * FROM products 
        WHERE name ILIKE $1 OR description ILIKE $1 OR serial_number ILIKE $1
@@ -254,16 +278,22 @@ export const searchProducts = api(
       [`%${query}%`]
     );
 
-    return result.rows.map(mapRowToProduct);
+    const products = result.rows.map(mapRowToProduct);
+
+    return {
+      products,
+      count: products.length,
+    };
   }
 );
 
 /**
  * Get Product Categories
+ * Fixed: Wrapped array return in interface to satisfy Encore type requirements
  */
 export const getProductCategories = api(
   { expose: true, method: 'GET', path: '/products/categories' },
-  async (): Promise<Array<{ name: string; count: number }>> => {
+  async (): Promise<CategoryResponse> => {
     const result = await db.query(
       `SELECT category as name, COUNT(*) as count 
        FROM products 
@@ -271,10 +301,15 @@ export const getProductCategories = api(
        ORDER BY count DESC`
     );
 
-    return result.rows.map((row: any) => ({
+    const categories = result.rows.map((row: any) => ({
       name: row.name,
       count: parseInt(row.count),
     }));
+
+    return {
+      categories,
+      total: categories.length,
+    };
   }
 );
 
