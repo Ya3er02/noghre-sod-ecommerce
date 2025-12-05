@@ -74,8 +74,15 @@ export interface ProductsResponse {
   count: number;
 }
 
+// Named interface for category item (Encore requirement)
+export interface Category {
+  name: string;
+  count: number;
+}
+
+// Wrapper interface for categories list
 export interface CategoryResponse {
-  categories: Array<{ name: string; count: number }>;
+  categories: Category[];
   total: number;
 }
 
@@ -289,7 +296,7 @@ export const searchProducts = api(
 
 /**
  * Get Product Categories
- * Fixed: Wrapped array return in interface to satisfy Encore type requirements
+ * Fixed: Created named Category interface to satisfy Encore type requirements
  */
 export const getProductCategories = api(
   { expose: true, method: 'GET', path: '/products/categories' },
@@ -301,7 +308,7 @@ export const getProductCategories = api(
        ORDER BY count DESC`
     );
 
-    const categories = result.rows.map((row: any) => ({
+    const categories: Category[] = result.rows.map((row: any) => ({
       name: row.name,
       count: parseInt(row.count),
     }));
