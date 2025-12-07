@@ -12,6 +12,8 @@ import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import FAQPage from "./pages/FAQPage";
 import LiquidChrome from '@/components/LiquidChrome';
+import { useEffect } from 'react';
+import { rateLimiter } from '@/lib/security';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,6 +38,13 @@ if (!PUBLISHABLE_KEY) {
 }
 
 export default function App() {
+  // Cleanup rateLimiter on app unmount
+  useEffect(() => {
+    return () => {
+      rateLimiter.stop();
+    };
+  }, []);
+
   return (
     <ErrorBoundary>
       <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
