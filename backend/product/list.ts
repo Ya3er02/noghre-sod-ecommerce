@@ -1,16 +1,11 @@
 import { api, APIError } from 'encore.dev/api';
-import { SQLDatabase } from 'encore.dev/storage/sqldb';
-import * as path from 'path';
+import { db } from './db';
+import { mapRowToProduct } from './utils';
 import type {
   Product,
   ProductFilterParams,
   ProductListResponse,
 } from './types';
-
-// Database connection
-const db = new SQLDatabase('product', {
-  migrations: path.join(__dirname, 'migrations'),
-});
 
 /**
  * List Products with Filtering & Pagination
@@ -33,7 +28,10 @@ export const listProducts = api(
       limit = 12,
     } = params;
 
-    const offset = (page - 1) * limit;
+    // Validate pagination
+    const validatedPage = Math.max(1, Math.floor(page || 1));
+    const validatedLimit = Math.min(100, Math.max(1, Math.floor(limit || 12)));
+    const offset = (validatedPage - 1) * validatedLimit;
 
     // Build WHERE clause
     const conditions: string[] = [];
@@ -96,56 +94,35 @@ export const listProducts = api(
         break;
     }
 
-    // Get total count
-    const countQuery = `SELECT COUNT(*) FROM products ${whereClause}`;
-    const countResult = await db.query(countQuery, values);
-    const totalCount = parseInt(countResult.rows[0].count);
+    try {
+      // Get total count
+      const countQuery = `SELECT COUNT(*) FROM products ${whereClause}`;
+      const countResult = await db.query(countQuery, values);
+      const totalCount = countResult.rows?.[0]
+        ? parseInt(countResult.rows[0].count)
+        : 0;
 
-    // Get products
-    const query = `
-      SELECT * FROM products
-      ${whereClause}
-      ORDER BY ${orderBy}
-      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
-    `;
-    values.push(limit, offset);
+      // Get products
+      const query = `
+        SELECT * FROM products
+        ${whereClause}
+        ORDER BY ${orderBy}
+        LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+      `;
+      values.push(validatedLimit, offset);
 
-    const result = await db.query(query, values);
-    const products = result.rows.map(mapRowToProduct);
+      const result = await db.query(query, values);
+      const products = (result.rows || []).map(mapRowToProduct);
 
-    return {
-      products,
-      totalCount,
-      totalPages: Math.ceil(totalCount / limit),
-      currentPage: page,
-    };
+      return {
+        products,
+        totalCount,
+        totalPages: Math.ceil(totalCount / validatedLimit),
+        currentPage: validatedPage,
+      };
+    } catch (error) {
+      console.error('Error listing products:', error);
+      throw APIError.internal('Failed to list products');
+    }
   }
 );
-
-// Helper function to map database row to Product
-function mapRowToProduct(row: any): Product {
-  return {
-    id: row.id,
-    name: row.name,
-    nameEn: row.name_en,
-    description: row.description,
-    price: parseFloat(row.price),
-    originalPrice: row.original_price
-      ? parseFloat(row.original_price)
-      : undefined,
-    weight: parseFloat(row.weight),
-    purity: row.purity,
-    serialNumber: row.serial_number,
-    category: row.category,
-    images:
-      typeof row.images === 'string' ? JSON.parse(row.images) : row.images,
-    inStock: row.in_stock,
-    isNew: row.is_new,
-    isFeatured: row.is_featured,
-    discount: row.discount,
-    rating: row.rating ? parseFloat(row.rating) : undefined,
-    reviewCount: row.review_count,
-    createdAt: new Date(row.created_at),
-    updatedAt: new Date(row.updated_at),
-  };
-}

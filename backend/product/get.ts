@@ -1,12 +1,9 @@
 import { api, APIError } from 'encore.dev/api';
-import { SQLDatabase } from 'encore.dev/storage/sqldb';
-import * as path from 'path';
+import { db } from './db';
+import { mapRowToProduct } from './utils';
 import type { Product, ProductsResponse } from './types';
 
-// Database connection
-const db = new SQLDatabase('product', {
-  migrations: path.join(__dirname, 'migrations'),
-});
+const MAX_LIMIT = 100;
 
 /**
  * Get Single Product by ID
@@ -14,15 +11,27 @@ const db = new SQLDatabase('product', {
 export const getProductById = api(
   { expose: true, method: 'GET', path: '/products/:id' },
   async ({ id }: { id: string }): Promise<Product> => {
-    const result = await db.query('SELECT * FROM products WHERE id = $1', [
-      id,
-    ]);
-
-    if (result.rows.length === 0) {
-      throw APIError.notFound('Product not found');
+    if (!id || typeof id !== 'string') {
+      throw APIError.invalidArgument('Product ID is required');
     }
 
-    return mapRowToProduct(result.rows[0]);
+    try {
+      const result = await db.query('SELECT * FROM products WHERE id = $1', [
+        id,
+      ]);
+
+      if (!result?.rows?.[0]) {
+        throw APIError.notFound('Product not found');
+      }
+
+      return mapRowToProduct(result.rows[0]);
+    } catch (error) {
+      if (error instanceof Error && error.message?.includes('not found')) {
+        throw error;
+      }
+      console.error('Error getting product:', error);
+      throw APIError.internal('Failed to get product');
+    }
   }
 );
 
@@ -32,17 +41,28 @@ export const getProductById = api(
 export const getFeaturedProducts = api(
   { expose: true, method: 'GET', path: '/products/featured' },
   async ({ limit = 8 }: { limit?: number }): Promise<ProductsResponse> => {
-    const result = await db.query(
-      'SELECT * FROM products WHERE is_featured = true ORDER BY created_at DESC LIMIT $1',
-      [limit]
+    // Validate limit
+    const validatedLimit = Math.min(
+      MAX_LIMIT,
+      Math.max(1, Math.floor(limit || 8))
     );
 
-    const products = result.rows.map(mapRowToProduct);
+    try {
+      const result = await db.query(
+        'SELECT * FROM products WHERE is_featured = true ORDER BY created_at DESC LIMIT $1',
+        [validatedLimit]
+      );
 
-    return {
-      products,
-      count: products.length,
-    };
+      const products = (result.rows || []).map(mapRowToProduct);
+
+      return {
+        products,
+        count: products.length,
+      };
+    } catch (error) {
+      console.error('Error getting featured products:', error);
+      throw APIError.internal('Failed to get featured products');
+    }
   }
 );
 
@@ -58,33 +78,51 @@ export const getRelatedProducts = api(
     id: string;
     limit?: number;
   }): Promise<ProductsResponse> => {
-    // Get product category
-    const productResult = await db.query(
-      'SELECT category FROM products WHERE id = $1',
-      [id]
-    );
-
-    if (productResult.rows.length === 0) {
-      throw APIError.notFound('Product not found');
+    if (!id || typeof id !== 'string') {
+      throw APIError.invalidArgument('Product ID is required');
     }
 
-    const category = productResult.rows[0].category;
-
-    // Get related products (same category, excluding current)
-    const result = await db.query(
-      `SELECT * FROM products 
-       WHERE category = $1 AND id != $2 AND in_stock = true
-       ORDER BY rating DESC, review_count DESC
-       LIMIT $3`,
-      [category, id, limit]
+    // Validate limit
+    const validatedLimit = Math.min(
+      MAX_LIMIT,
+      Math.max(1, Math.floor(limit || 4))
     );
 
-    const products = result.rows.map(mapRowToProduct);
+    try {
+      // Get product category
+      const productResult = await db.query(
+        'SELECT category FROM products WHERE id = $1',
+        [id]
+      );
 
-    return {
-      products,
-      count: products.length,
-    };
+      if (!productResult?.rows?.[0]) {
+        throw APIError.notFound('Product not found');
+      }
+
+      const category = productResult.rows[0].category;
+
+      // Get related products (same category, excluding current)
+      const result = await db.query(
+        `SELECT * FROM products 
+         WHERE category = $1 AND id != $2 AND in_stock = true
+         ORDER BY rating DESC, review_count DESC
+         LIMIT $3`,
+        [category, id, validatedLimit]
+      );
+
+      const products = (result.rows || []).map(mapRowToProduct);
+
+      return {
+        products,
+        count: products.length,
+      };
+    } catch (error) {
+      if (error instanceof Error && error.message?.includes('not found')) {
+        throw error;
+      }
+      console.error('Error getting related products:', error);
+      throw APIError.internal('Failed to get related products');
+    }
   }
 );
 
@@ -94,20 +132,29 @@ export const getRelatedProducts = api(
 export const searchProducts = api(
   { expose: true, method: 'GET', path: '/products/search' },
   async ({ query }: { query: string }): Promise<ProductsResponse> => {
-    const result = await db.query(
-      `SELECT * FROM products 
-       WHERE name ILIKE $1 OR description ILIKE $1 OR serial_number ILIKE $1
-       ORDER BY rating DESC
-       LIMIT 20`,
-      [`%${query}%`]
-    );
+    if (!query || typeof query !== 'string') {
+      throw APIError.invalidArgument('Search query is required');
+    }
 
-    const products = result.rows.map(mapRowToProduct);
+    try {
+      const result = await db.query(
+        `SELECT * FROM products 
+         WHERE name ILIKE $1 OR description ILIKE $1 OR serial_number ILIKE $1
+         ORDER BY rating DESC
+         LIMIT 20`,
+        [`%${query}%`]
+      );
 
-    return {
-      products,
-      count: products.length,
-    };
+      const products = (result.rows || []).map(mapRowToProduct);
+
+      return {
+        products,
+        count: products.length,
+      };
+    } catch (error) {
+      console.error('Error searching products:', error);
+      throw APIError.internal('Failed to search products');
+    }
   }
 );
 
@@ -116,50 +163,30 @@ export const searchProducts = api(
  */
 export const getProductCategories = api(
   { expose: true, method: 'GET', path: '/products/categories/list' },
-  async (): Promise<{ categories: Array<{ name: string; count: number }>; total: number }> => {
-    const result = await db.query(
-      `SELECT category as name, COUNT(*) as count 
-       FROM products 
-       GROUP BY category 
-       ORDER BY count DESC`
-    );
+  async (): Promise<{
+    categories: Array<{ name: string; count: number }>;
+    total: number;
+  }> => {
+    try {
+      const result = await db.query(
+        `SELECT category as name, COUNT(*) as count 
+         FROM products 
+         GROUP BY category 
+         ORDER BY count DESC`
+      );
 
-    const categories = result.rows.map((row: any) => ({
-      name: row.name,
-      count: parseInt(row.count),
-    }));
+      const categories = (result.rows || []).map((row: any) => ({
+        name: row.name || '',
+        count: parseInt(row.count || '0'),
+      }));
 
-    return {
-      categories,
-      total: categories.length,
-    };
+      return {
+        categories,
+        total: categories.length,
+      };
+    } catch (error) {
+      console.error('Error getting categories:', error);
+      throw APIError.internal('Failed to get categories');
+    }
   }
 );
-
-// Helper function to map database row to Product
-function mapRowToProduct(row: any): Product {
-  return {
-    id: row.id,
-    name: row.name,
-    nameEn: row.name_en,
-    description: row.description,
-    price: parseFloat(row.price),
-    originalPrice: row.original_price
-      ? parseFloat(row.original_price)
-      : undefined,
-    weight: parseFloat(row.weight),
-    purity: row.purity,
-    serialNumber: row.serial_number,
-    category: row.category,
-    images:
-      typeof row.images === 'string' ? JSON.parse(row.images) : row.images,
-    inStock: row.in_stock,
-    isNew: row.is_new,
-    isFeatured: row.is_featured,
-    discount: row.discount,
-    rating: row.rating ? parseFloat(row.rating) : undefined,
-    reviewCount: row.review_count,
-    createdAt: new Date(row.created_at),
-    updatedAt: new Date(row.updated_at),
-  };
-}
