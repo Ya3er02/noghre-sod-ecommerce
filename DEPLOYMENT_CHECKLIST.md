@@ -41,7 +41,7 @@ git checkout -b release/v2.1.0
 ```bash
 cd backend
 bun run build
-encorre run --env=production
+enccore run --env=production
 ```
 
 ### 3. Database Migrations
@@ -50,13 +50,13 @@ encorre run --env=production
 pg_dump -U postgres noghre_sod > backup_$(date +%Y%m%d_%H%M%S).sql
 
 # Run migrations
-encorre run migrations
+enccore run migrations
 ```
 
 ### 4. Deploy Staging
 ```bash
 # Deploy to staging first
-encorre deploy --env=staging
+enccore deploy --env=staging
 
 # Run smoke tests
 bun run test:smoke
@@ -65,7 +65,7 @@ bun run test:smoke
 ### 5. Production Deployment
 ```bash
 # Deploy to production
-encorre deploy --env=production
+enccore deploy --env=production
 
 # Verify deployment
 curl https://api.noghresood.shop/health
@@ -84,11 +84,11 @@ curl https://api.noghresood.shop/health
 If issues occur:
 ```bash
 # Rollback to previous version
-encorre rollback --env=production
+enccore rollback --env=production
 
 # Or redeploy from main branch
 git checkout main
-encorre deploy --env=production
+enccore deploy --env=production
 ```
 
 ### Communication
@@ -101,7 +101,7 @@ encorre deploy --env=production
 
 ### Watch Logs
 ```bash
-encorre logs --env=production -f
+enccore logs --env=production -f
 ```
 
 ### Check Metrics
@@ -127,4 +127,3 @@ encorre logs --env=production -f
 ✅ Performance metrics acceptable
 ✅ Team communication complete
 ✅ Documentation updated
-

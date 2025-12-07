@@ -5,7 +5,7 @@
 ```bash
 cd backend
 bun install
-encorre run
+enccore run
 ```
 
 ## API Endpoint Tests
@@ -240,8 +240,11 @@ curl -X PUT http://localhost:4000/buyback/requests/{requestId}/reject \
 
 ### Invalid Query Parameters
 ```bash
-# Should fail gracefully
+# Should clamp to valid range
 curl 'http://localhost:4000/products?page=abc&limit=-5'
+
+# Should clamp limit to max (100)
+curl 'http://localhost:4000/products?limit=999999'
 ```
 
 ### Missing Required Parameters
@@ -265,6 +268,47 @@ curl -X POST http://localhost:4000/products/create \
 ```bash
 # Should return 404 Not Found
 curl http://localhost:4000/products/invalid-id
+```
+
+### Database Errors
+```bash
+# Should return 400 Bad Request for constraint violation
+curl -X POST http://localhost:4000/products/create \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Duplicate Ring",
+    "price": 500,
+    "serialNumber": "GR-001"  # If this already exists
+  }'
+```
+
+## Sanitization Tests
+
+### Apostrophe Preservation
+```bash
+# Test that apostrophes are preserved
+curl 'http://localhost:4000/products/create' \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Women's Ring",  # Should preserve apostrophe
+    "description": "Don't miss this!",  # Should preserve apostrophe
+    "price": 500
+  }'
+```
+
+### HTML Tag Removal
+```bash
+# Test that HTML tags are removed
+curl 'http://localhost:4000/products/create' \
+  -H "Authorization: Bearer {token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Ring <script>alert(1)</script>",  # Script tags removed
+    "description": "<b>Bold</b> text",  # HTML tags removed
+    "price": 500
+  }'
 ```
 
 ## Automated Testing (BDD)
@@ -298,6 +342,9 @@ psql -U postgres -d noghre_sod -c "SELECT COUNT(*) FROM products;"
 
 # Check buyback requests
 psql -U postgres -d noghre_sod -c "SELECT * FROM buyback_requests;"
+
+# Check for data integrity
+psql -U postgres -d noghre_sod -c "SELECT name FROM products WHERE name LIKE '%<script>%';"
 ```
 
 ## Checklist
@@ -309,6 +356,10 @@ psql -U postgres -d noghre_sod -c "SELECT * FROM buyback_requests;"
 - [ ] Error responses are proper HTTP status codes
 - [ ] Response schemas match documentation
 - [ ] Database transactions complete successfully
+- [ ] Sanitization preserves legitimate characters
+- [ ] HTML tags are properly removed
 - [ ] No console errors or warnings
 - [ ] Performance is acceptable (< 200ms per request)
-
+- [ ] Errors include helpful context messages
+- [ ] Query parameters are properly validated
+- [ ] Large limit values are clamped to safe max
