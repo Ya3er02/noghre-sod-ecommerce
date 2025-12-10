@@ -1,109 +1,171 @@
-# ============================================
-# Docker Compose for Noghre Sod E-commerce
-# ============================================
-
-version: '3.9'
+version: '3.8'
 
 services:
-  # ==========================================
-  # PostgreSQL Database
-  # ==========================================
+  # ============================================
+  # POSTGRESQL DATABASE
+  # ============================================
   postgres:
     image: postgres:16-alpine
-    container_name: noghre_sod_postgres
-    restart: unless-stopped
+    container_name: noghre-postgres
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-noghre_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
-      POSTGRES_DB: ${POSTGRES_DB:-noghre_sod_db}
-      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: ${POSTGRES_DB:-noghre_sod}
+      POSTGRES_USER: ${POSTGRES_USER:-silver_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-silver_secure_pass}
+    ports:
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
-    ports:
-      - "127.0.0.1:5432:5432"
-    networks:
-      - noghre_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-noghre_user} -d ${POSTGRES_DB:-noghre_sod_db}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-silver_admin}']
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - noghre-network
 
-  # ==========================================
-  # Redis Cache
-  # ==========================================
+  # ============================================
+  # REDIS CACHE & SESSION STORE
+  # ============================================
   redis:
     image: redis:7-alpine
-    container_name: noghre_sod_redis
-    restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-changeme}
+    container_name: noghre-redis
+    ports:
+      - '6379:6379'
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_secure_pass}
     volumes:
       - redis_data:/data
-    ports:
-      - "127.0.0.1:6379:6379"
-    networks:
-      - noghre_network
     healthcheck:
-      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-changeme}", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - noghre-network
 
-  # ==========================================
-  # Backend (Encore.ts)
-  # ==========================================
-  backend:
+  # ============================================
+  # CORE SERVICE
+  # Essential API - Auth, User, Products (Never goes down)
+  # ============================================
+  core-service:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: noghre_sod_backend
-    restart: unless-stopped
+      context: .
+      dockerfile: services/core/Dockerfile
+    container_name: noghre-core-service
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-silver_admin}:${POSTGRES_PASSWORD:-silver_secure_pass}@postgres:5432/${POSTGRES_DB:-noghre_sod}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_secure_pass}@redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-key-min-32-chars-production-only}
+      JWT_EXPIRY: ${JWT_EXPIRY:-7d}
+      CIRCUIT_BREAKER_THRESHOLD: ${CIRCUIT_BREAKER_THRESHOLD:-5}
+      CIRCUIT_BREAKER_TIMEOUT: ${CIRCUIT_BREAKER_TIMEOUT:-60000}
+      FEATURE_FLAGS_ENABLED: ${FEATURE_FLAGS_ENABLED:-true}
+    ports:
+      - '3001:3001'
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    environment:
-      - NODE_ENV=production
-      - HOST=0.0.0.0
-      - PORT=4000
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - REDIS_HOST=${REDIS_HOST:-redis}
-      - REDIS_PORT=${REDIS_PORT:-6379}
-      - CLERK_SECRET_KEY=${CLERK_SECRET_KEY}
-      - JWT_SECRET=${JWT_SECRET}
-      - SESSION_SECRET=${SESSION_SECRET}
-      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
-    env_file:
-      - .env.production
-    ports:
-      - "127.0.0.1:4000:4000"
-    networks:
-      - noghre_network
-    volumes:
-      - ./backend/uploads:/app/uploads
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
-      interval: 30s
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/health']
+      interval: 15s
       timeout: 10s
-      retries: 3
-      start_period: 40s
+      retries: 5
+      start_period: 30s
+    networks:
+      - noghre-network
+    restart: unless-stopped
 
-# ==========================================
-# Networks
-# ==========================================
-networks:
-  noghre_network:
-    driver: bridge
+  # ============================================
+  # INTELLIGENCE SERVICE
+  # AI-powered insights with graceful fallback
+  # ============================================
+  intelligence-service:
+    build:
+      context: .
+      dockerfile: services/intelligence/Dockerfile
+    container_name: noghre-intelligence-service
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3002
+      DATABASE_URL: postgresql://${POSTGRES_USER:-silver_admin}:${POSTGRES_PASSWORD:-silver_secure_pass}@postgres:5432/${POSTGRES_DB:-noghre_sod}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_secure_pass}@redis:6379
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-1.5-flash}
+      CIRCUIT_BREAKER_THRESHOLD: ${CIRCUIT_BREAKER_THRESHOLD:-5}
+      CIRCUIT_BREAKER_TIMEOUT: ${CIRCUIT_BREAKER_TIMEOUT:-60000}
+      FEATURE_FLAGS_ENABLED: ${FEATURE_FLAGS_ENABLED:-true}
+      FEATURE_AI_ADVISOR: ${FEATURE_AI_ADVISOR:-true}
+      FALLBACK_MODE: ${FALLBACK_MODE:-enabled}
+    ports:
+      - '3002:3002'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      core-service:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3002/health']
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - noghre-network
+    restart: unless-stopped
 
-# ==========================================
-# Volumes
-# ==========================================
+  # ============================================
+  # FRONTEND - NEXT.JS STOREFRONT
+  # ============================================
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: noghre-web
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+      NEXT_PUBLIC_AI_SERVICE_URL: ${NEXT_PUBLIC_AI_SERVICE_URL:-http://localhost:3002}
+    ports:
+      - '3000:3000'
+    depends_on:
+      - core-service
+      - intelligence-service
+    networks:
+      - noghre-network
+    restart: unless-stopped
+
+  # ============================================
+  # NGINX REVERSE PROXY
+  # Routes requests to appropriate services
+  # ============================================
+  nginx:
+    image: nginx:alpine
+    container_name: noghre-nginx
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - web
+      - core-service
+      - intelligence-service
+    networks:
+      - noghre-network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
     driver: local
   redis_data:
     driver: local
+
+networks:
+  noghre-network:
+    driver: bridge
